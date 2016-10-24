@@ -205,8 +205,7 @@ class Database
         else {
             $sql = SQL::$selGeoPhoto . "LIMIT " . $n . ", 1";
         }
-        
-        return $this->select($sql, $values);
+        return $this->select($sql, $values, false, false);
     }
 
     public function updateActivity()
@@ -307,7 +306,7 @@ class Database
         $this->insert(SQL::$insNewReport, $values);
     }
     
-    public function select($sql, array $values = null, $selectAll = false){
+    public function select($sql, array $values = null, $selectAll = false, $fetchAll = true){
 
         try
         {
@@ -327,15 +326,21 @@ class Database
             exit();
         }
 
-        while ($result[] = $s->fetch());
-
-        if (!isset($result[1]))
-        {
-            if (!isset($result[0][1]) and !$selectAll){
-                return $result[0][0];
+        if ($fetchAll) {
+            $result = $s->fetchAll();
+            if (!isset($result[1]))
+            {
+                if (!isset($result[0][1]) and !$selectAll){
+                    return $result[0][0];
+                }
+                return $result[0];
             }
-            return $result[0];   
         }
+        else {
+            return $s->fetch();
+        }
+
+
 
         return $result;
     }
