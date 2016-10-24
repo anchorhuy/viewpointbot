@@ -28,8 +28,8 @@ class SQL
     public static $selGeoPhoto = 
        "SELECT
           address
-          file_tlgrm_id  file,
-          photo_tlgrm_id photo,
+          file_tlgrm_id  as file,
+          photo_tlgrm_id as photo,
           6371 * 2 * ASIN(SQRT(
                               POWER(SIN((:lat - abs(x(coordinate))) * pi() / 180 / 2),
                                     2) + COS(:lat * pi() / 180) * COS(abs(x(coordinate)) *
