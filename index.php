@@ -554,7 +554,7 @@ else
                 ]
             ];
 
-//            $request->createCaption($caption);
+            $request->createCaption($caption);
             $request->createInlineKeyboard($keyboard);
             $request->sendMessage($photo_id);
             $request->sendPhoto($photo_id);

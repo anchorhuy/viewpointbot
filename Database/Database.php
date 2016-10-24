@@ -199,7 +199,7 @@ class Database
         $values['lng']  = $info['lng'];
         $values['dist'] = $info['dist'];
         
-        if ($n) {
+        if (!$n) {
             $sql = SQL::$selGeoPhoto . "LIMIT 1";
         }
         else {
