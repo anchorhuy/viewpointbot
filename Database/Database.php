@@ -195,17 +195,18 @@ class Database
     {
         $info = self::getUserGeo();
         
-        $values['lat']  = $info['lat'];
-        $values['lng']  = $info['lng'];
-        $values['dist'] = $info['dist'];
+        $sql = 
+            "set @mylat = ". $info['lat'] . "; 
+             set @mylon = ". $info['lng'] . "; 
+             set @dist  = ". $info['lat'] . "; ";
         
         if ($n) {
-            $sql = SQL::$selGeoPhoto . "LIMIT 1";
+            $sql .= SQL::$selGeoPhoto . "LIMIT 1";
         }
         else {
-            $sql = SQL::$selGeoPhoto . "LIMIT " . $n . ", 1";
+            $sql .= SQL::$selGeoPhoto . "LIMIT " . $n . ", 1";
         }
-        return $this->select($sql, $values, false, false);
+        return $this->select($sql);
     }
 
     public function updateActivity()

@@ -26,10 +26,7 @@ class SQL
     public static $selRandPhoto = "SELECT photo_tlgrm_id, photo_id, caption FROM photos       WHERE photo_id NOT IN (SELECT photo_id FROM view_history INNER JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id)";
     
     public static $selGeoPhoto = 
-       "set @mylat= :lat;
-        set @mylon= :lng ;
-        set @dist = :dist;
-        
+       "
         set @lon1 = @mylon - @dist/abs(cos(radians(@mylat))*69);
         set @lon2 = @mylon + @dist/abs(cos(radians(@mylat))*69);
         set @lat1 = @mylat - (@dist/69);
