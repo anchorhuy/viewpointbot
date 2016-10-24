@@ -177,7 +177,7 @@ class SQL
     #UPDATE
     public static $updUserCoordinate = 
         "UPDATE users
-         SET `coordinate` = :coordinate
+         SET `coordinate` = PointFromText(:coordinate)
          WHERE chat_id = :chat_id";
 
     public static $updLike =
