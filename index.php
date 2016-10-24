@@ -280,10 +280,10 @@ if ($data->message)
         }
         exit();
     }
-    if (substr($data->data, 0, 9) == "nextGeoImg")
+    if (substr($data->data, 0, 10) == "nextGeoImg")
     {
         $request->answerCallbackQuery('Загружаем следующую фотографию..');
-        $num   = substr($data->data, 9);
+        $num   = substr($data->data, 10);
         $photo = $database->getNearPhoto($num);
 
         if (count($photo) == 2){
@@ -372,7 +372,7 @@ if ($data->message)
 
             $request->createCaption($caption);
             $request->createInlineKeyboard($keyboard);
-            $request->sendPhoto($photo);
+            $request->sendPhoto($next_photo_id);
         }
         unset($keyboard);
         $request->unsetKeyboard();
@@ -517,11 +517,11 @@ else
         {
             $database->setUserCoordinate();
             $photo    = $database->getNearPhoto();
-            ob_start();
-            var_dump($photo);
-            $dump = ob_get_contents();
-            ob_end_clean();
-            $request->sendMessage($dump);
+//            ob_start();
+//            var_dump($photo);
+//            $dump = ob_get_contents();
+//            ob_end_clean();
+//            $request->sendMessage($dump);
             $photo_id = $photo['photo']; 
             $file     = $photo['file'];
             $address  = $photo['address'];
@@ -559,9 +559,8 @@ else
                 ]
             ];
 
-//            $request->createCaption($caption);
+            $request->createCaption($caption);
             $request->createInlineKeyboard($keyboard);
-            $request->sendMessage($photo_id);
             $request->sendPhoto($photo_id);
         }
         exit();
