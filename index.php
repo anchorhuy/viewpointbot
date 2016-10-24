@@ -272,7 +272,7 @@ if ($data->message)
     }
     if (substr($data->data, 0, 6) == "report")
     {
-        $subject = substr($data->data, 6, 7);
+        $subject  = substr($data->data, 6, 7);
         $photo_id = substr($data->data, 7);
         switch ($subject)
         {
@@ -294,6 +294,7 @@ if ($data->message)
             $answer = 'Отправляем жалобу';
             $request->answerCallbackQuery($answer);
             $request->createInlineKeyboard([]);
+            $request->sendMessage($subject_index);
             $request->editMessageReplyMarkup();
             $database->createNewReport($photo_id, $subject_index);
         }
