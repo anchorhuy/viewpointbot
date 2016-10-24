@@ -284,7 +284,7 @@ if ($data->message)
                 break;
         }
 
-        if ($address = $database->checkAlreadyReport($photo_id, $subject_index))
+        if ($database->checkAlreadyReport($photo_id, $subject_index))
         {
             $answer = 'Жалоба уже отправлена';
             $request->answerCallbackQuery($answer, true);
@@ -294,7 +294,7 @@ if ($data->message)
             $answer = 'Отправляем жалобу';
             $request->answerCallbackQuery($answer);
             $request->createInlineKeyboard([]);
-            $request->sendMessage($subject_index);
+            $request->sendMessage($subject_index . ' - ' . $subject_index. ' - ' . $data->data);
             $request->editMessageReplyMarkup();
             $database->createNewReport($photo_id, $subject_index);
         }
@@ -467,7 +467,7 @@ else
                 $database->deleteFile();
                 $text = "Файл удален";
                 $keyboard[] = Keyboards::$replySendToModeration;
-                $database->checkIssetCoordinate() ?: $keyboard[] = Keyboards::$replyDeleteAddress;
+                !$database->checkIssetCoordinate() ?: $keyboard[] = Keyboards::$replyDeleteAddress;
                 $request->createReplyKeyboard($keyboard);
                 $request->sendMessage($text);
                 exit();
@@ -477,7 +477,7 @@ else
                 $database->deleteCoordinate();
                 $text = "Адрес удален";
                 $keyboard[] = Keyboards::$replySendToModeration;
-                $database->checkIssetFile() ?: $keyboard[] = Keyboards::$replyDeleteFile;
+                !$database->checkIssetFile() ?: $keyboard[] = Keyboards::$replyDeleteFile;
                 $request->createReplyKeyboard($keyboard);
                 $request->sendMessage($text);
                 exit();
