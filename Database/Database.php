@@ -327,7 +327,7 @@ class Database
             exit();
         }
 
-        $result = $s->fetchAll();
+        while ($result[] = $s->fetch());
 
         if (!isset($result[1]))
         {
