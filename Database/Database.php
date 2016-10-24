@@ -194,19 +194,18 @@ class Database
     public function getNearPhoto($n = 0)
     {
         $info = self::getUserGeo();
-        
-        $sql = 
-            "set @mylat = ". $info['lat'] . "; 
-             set @mylon = ". $info['lng'] . "; 
-             set @dist  = ". $info['lat'] . "; ";
+                
+        $values['lat']  = $info['lat'];
+        $values['lng']  = $info['lng'];
+        $values['dist'] = $info['dist'];
         
         if ($n) {
-            $sql .= SQL::$selGeoPhoto . "LIMIT 1";
+            $sql = SQL::$selGeoPhoto . "LIMIT 1";
         }
         else {
-            $sql .= SQL::$selGeoPhoto . "LIMIT " . $n . ", 1";
+            $sql = SQL::$selGeoPhoto . "LIMIT " . $n . ", 1";
         }
-        return $this->select($sql);
+        return $this->select($sql, $values, false, false);
     }
 
     public function updateActivity()

@@ -26,25 +26,19 @@ class SQL
     public static $selRandPhoto = "SELECT photo_tlgrm_id, photo_id, caption FROM photos       WHERE photo_id NOT IN (SELECT photo_id FROM view_history INNER JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id)";
     
     public static $selGeoPhoto = 
-       "
-        set @lon1 = @mylon - @dist/abs(cos(radians(@mylat))*69);
-        set @lon2 = @mylon + @dist/abs(cos(radians(@mylat))*69);
-        set @lat1 = @mylat - (@dist/69);
-        set @lat2 = @mylat + (@dist/69);
-        
-        SELECT x(coordinate), y(coordinate), coordinate, 6371 * 2 * ASIN(SQRT(
-                                                                             POWER(SIN((@mylat - abs(x(coordinate))) * pi()/180 / 2),
-                                                                                   2) + COS(@mylat * pi()/180 ) * COS(abs(x(coordinate)) *
-                                                                                                                      pi()/180) * POWER(SIN((@mylon - y(coordinate)) *
+       "SELECT x(coordinate), y(coordinate), coordinate, 6371 * 2 * ASIN(SQRT(
+                                                                             POWER(SIN((:lat - abs(x(coordinate))) * pi()/180 / 2),
+                                                                                   2) + COS(:lat * pi()/180 ) * COS(abs(x(coordinate)) *
+                                                                                                                      pi()/180) * POWER(SIN((:lng - y(coordinate)) *
                                                                                                                                             pi()/180 / 2), 2) )) as distance
         FROM coordinates
         
         WHERE
-          x(coordinate) between @lat1 and @lat2
+          x(coordinate) between (:lat - (:dist/69)) and (:lat + (:dist/69))
           AND
-          y(coordinate) between @lon1 and @lon2
+          y(coordinate) between (:lng - :dist/abs(cos(radians(:lat))*69)) and (:lng + :dist/abs(cos(radians(:lat))*69))
         
-        HAVING distance < @dist
+        HAVING distance < :dist
         ORDER BY distance ";
 
     public static $selLike =
