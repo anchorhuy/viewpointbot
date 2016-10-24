@@ -26,12 +26,12 @@ class SQL
     public static $selRandPhoto = "SELECT photo_tlgrm_id, photo_id, caption FROM photos       WHERE photo_id NOT IN (SELECT photo_id FROM view_history INNER JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id)";
     
     public static $selGeoPhoto = 
-       "SELECT x(coordinate), y(coordinate), coordinate, 6371 * 2 * ASIN(SQRT(
+       "SELECT x(coordinate) lat, y(coordinate) lng, file_tlgrm_id file, photo_tlgrm_id photo, 6371 * 2 * ASIN(SQRT(
                                                                              POWER(SIN((:lat - abs(x(coordinate))) * pi()/180 / 2),
                                                                                    2) + COS(:lat * pi()/180 ) * COS(abs(x(coordinate)) *
                                                                                                                       pi()/180) * POWER(SIN((:lng - y(coordinate)) *
                                                                                                                                             pi()/180 / 2), 2) )) as distance
-        FROM coordinates
+        FROM photos LEFT JOIN coordinates ON photos.photo_id = coordinates.photo_id LEFT JOIN files ON photos.photo_id = files.photo_id
         
         WHERE
           x(coordinate) between (:lat - (:dist/69)) and (:lat + (:dist/69))

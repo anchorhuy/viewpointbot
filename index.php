@@ -417,7 +417,7 @@ else
         {
             $database->setUserCoordinate();
             $photo = $database->getNearPhoto();
-            $request->sendMessage($photo);
+            $request->sendMessage($photo['lng']);
 //            $request->sendMessage($database->getPhotosInDistance());
         }
         exit();
