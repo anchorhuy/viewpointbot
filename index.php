@@ -556,7 +556,7 @@ else
 
 //            $request->createCaption($caption);
             $request->createInlineKeyboard($keyboard);
-            $request->sendPhoto($photo);
+            $request->sendPhoto($photo_id);
         }
         exit();
 
