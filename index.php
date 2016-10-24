@@ -517,11 +517,11 @@ else
         {
             $database->setUserCoordinate();
             $photo    = $database->getNearPhoto();
-//            ob_start();
-//            var_dump($photo);
-//            $dump = ob_get_contents();
-//            ob_end_clean();
-//            $request->sendMessage($dump);
+            ob_start();
+            var_dump($photo);
+            $dump = ob_get_contents();
+            ob_end_clean();
+            $request->sendMessage($dump);
             $photo_id = $photo['photo']; 
             $file     = $photo['file'];
             $address  = $photo['address'];
