@@ -191,7 +191,7 @@ class Database
 
         return $photo;
     }
-    public function getNearPhoto()
+    public function getNearPhoto($n = 0)
     {
         $info = self::getUserGeo();
         
@@ -199,20 +199,14 @@ class Database
         $values['lng']  = $info['lng'];
         $values['dist'] = $info['dist'];
         
-        
-        $n     = rand(0 , $this->select(SQL::$selCountUnwatchedPhoto, $values) - 1);
-        $photo = $this->select(SQL::$selInformationAboutThisPhoto . " LIMIT " . $n . ", 1", $values);
-
-        unset($values);
-
-        if ($photo)
-        {
-            $values['user_id']        = $this->getUserId();
-            $values['photo_id']       = $photo['photo_id'];
-            $this->insert(SQL::$insInViewHistory, $values);
+        if ($n) {
+            $sql = SQL::$selGeoPhoto . "LIMIT 1";
         }
-
-        return $photo;
+        else {
+            $sql = SQL::$selGeoPhoto . "LIMIT " . $n . ", 1";
+        }
+        
+        return $this->select($sql, $values);
     }
 
     public function updateActivity()

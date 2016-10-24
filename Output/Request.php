@@ -31,7 +31,7 @@ class Request
         }
 
         if (!isset($this->one_time_keyboard)) {
-            $this->one_time_keyboard = true;
+            $this->one_time_keyboard = false;
         }
 
         if (!isset($this->resize_keyboard)) {

@@ -32,26 +32,6 @@ if ($data->message)
 {
     switch ($data->data)
     {
-        case 'deleteCoordinate' :
-
-            $func = $data->data;
-            $database->$func();
-            $request->answerCallbackQuery('Геолокация успешно удалена', true);
-            $request->createInlineKeyboard([]);
-            $request->editMessageReplyMarkup();
-            $request->editMessageText('Теперь можешь прикрепить новую геолокацию');
-            exit();
-            break;
-        case 'deleteFile' :
-
-            $func = $data->data;
-            $database->$func();
-            $request->answerCallbackQuery('Файл успешно удален', true);
-            $request->createInlineKeyboard([]);
-            $request->editMessageReplyMarkup();
-            $request->editMessageText('Теперь можешь прикрепить новый оригинал');
-            exit();
-            break;
         case 'nextRandImg':
 
             # Запрос на следующую картинку
@@ -335,7 +315,6 @@ else
             }
 
             $request->createCaption($caption);
-            $request->createInlineKeyboard(Keyboards::$inlineSendToModeration);
             $request->sendPhoto($photo);
             exit();
         }
@@ -364,7 +343,6 @@ else
                 if ($database->checkIssetFile()) {
                     $text  = "К текущей фотографии уже был прикреплен документ.\n\r";
                     $text .= "Удали его чтобы загрузить новый";
-                    $request->createInlineKeyboard(Keyboards::$inlineDeleteFile);
                     $request->sendMessage($text);
 
                     exit();
@@ -380,7 +358,6 @@ else
                 } else {
                     $text .= "Теперь можно отправить её на модерацию.\n";
                     $keyboard[] = Keyboards::$replyDeleteAddress;
-                    $request->createInlineKeyboard(Keyboards::$inlineSendToModeration);
                 }
 
                 $request->createReplyKeyboard($keyboard);
@@ -419,7 +396,6 @@ else
             else
             {
                 $text = "К фотографии уже прикреплена геолокация, удали существующую чтобы добавить новую.";
-                $request->createInlineKeyboard(Keyboards::$inlineDeleteCoordinate);
                 $request->sendMessage($text);
 
                 exit();

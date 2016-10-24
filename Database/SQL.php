@@ -48,7 +48,7 @@ class SQL
           y(coordinate) between @lon1 and @lon2
         
         HAVING distance < @dist
-        ORDER BY distance";
+        ORDER BY distance ";
 
     public static $selLike =
         "SELECT TRUE
