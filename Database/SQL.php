@@ -166,7 +166,7 @@ class SQL
             FROM reports
               INNER JOIN users
                 ON users.user_id = reports.user_id
-            WHERE chat_id = :chat_id AND photo_id = :photo_id AND status = :status";
+            WHERE chat_id = :chat_id AND photo_id = :photo_id AND subject = :subject";
     public static $selCheckInUpload             = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 0 AND chat_id = :chat_id LIMIT 1";
     public static $selCheckFile                 = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id INNER JOIN files       ON photos.photo_id = files.photo_id       WHERE photos.status = 0 AND chat_id = :chat_id limit 1";
     public static $selCheckCoordinate           = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id INNER JOIN coordinates ON photos.photo_id = coordinates.photo_id WHERE photos.status = 0 AND chat_id = :chat_id limit 1";

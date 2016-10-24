@@ -110,9 +110,9 @@ class Database
         $values['photo_id'] = $photo_id;
         return $this->select(SQL::$selDislike, $values);
     }
-    public function checkAlreadyReport($photo_id, $status)
+    public function checkAlreadyReport($photo_id, $subject)
     {
-        $values['status']   = $status;
+        $values['subject']   = $subject;
         $values['chat_id']  = Data::getChatID();
         $values['photo_id'] = $photo_id;
         return $this->select(SQL::$selCheckReport, $values);

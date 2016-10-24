@@ -461,6 +461,26 @@ else
                 $request->sendMessage($text);
                 exit();
             }
+            if ($input_text == 'Удалить файл')
+            {
+                $database->deleteFile();
+                $text = "Файл удален";
+                $keyboard[] = Keyboards::$replySendToModeration;
+                $database->checkIssetCoordinate() ?: $keyboard[] = Keyboards::$replyDeleteAddress;
+                $request->createReplyKeyboard($keyboard);
+                $request->sendMessage($text);
+                exit();
+            }
+            if ($input_text == 'Удалить адрес')
+            {
+                $database->deleteCoordinate();
+                $text = "Адрес удален";
+                $keyboard[] = Keyboards::$replySendToModeration;
+                $database->checkIssetFile() ?: $keyboard[] = Keyboards::$replyDeleteFile;
+                $request->createReplyKeyboard($keyboard);
+                $request->sendMessage($text);
+                exit();
+            }
 
             $address = urlencode($data->text);
             $url = "https://maps.googleapis.com/maps/api/geocode/json?address=" . $address . "&language=ru&key=AIzaSyAoSshruro4rvjdMicj1c0mvchKAVLMBg4";
