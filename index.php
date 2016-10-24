@@ -294,7 +294,7 @@ if ($data->message)
             $answer = 'Отправляем жалобу';
             $request->answerCallbackQuery($answer);
             $request->createInlineKeyboard([]);
-            $request->sendMessage($subject_index . ' - ' . $subject_index. ' - ' . $data->data);
+            $request->sendMessage($subject_index . ' - ' . $subject . ' - ' . $data->data);
             $request->editMessageReplyMarkup();
             $database->createNewReport($photo_id, $subject_index);
         }
