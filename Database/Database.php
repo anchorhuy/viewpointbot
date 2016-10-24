@@ -203,7 +203,7 @@ class Database
             $sql = SQL::$selGeoPhoto . "LIMIT 1";
         }
         else {
-            $sql = SQL::$selGeoPhoto . "LIMIT " . $n . ", 1";
+            $sql = SQL::$selGeoPhoto . "LIMIT " . $n . ", 2";
         }
         return $this->select($sql, $values);
     }

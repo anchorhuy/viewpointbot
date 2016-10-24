@@ -280,6 +280,106 @@ if ($data->message)
         }
         exit();
     }
+    if (substr($data->data, 0, 9) == "nextGeoImg")
+    {
+        $request->answerCallbackQuery('Загружаем следующую фотографию..');
+        $num   = substr($data->data, 9);
+        $photo = $database->getNearPhoto($num);
+
+        if (count($photo) == 2){
+            $last_photo = $photo[0];
+            $next_photo  = $photo[1];
+        }
+        else{
+            $last_photo = $photo;
+        }
+
+        $last_photo_id = $last_photo['photo'];
+        $last_file     = $last_photo['file'];
+        $last_address  = $last_photo['address'];
+        if ($last_address) {
+            $keyboard[] = [
+                [
+                    "text" => "Координаты",
+                    "callback_data" => "gl" . $last_photo_id
+                ]
+            ];
+        }
+        if ($last_file) {
+            $keyboard[] = [
+                [
+                    "text" => "Оригинал",
+                    "callback_data" => "gf" . $last_photo_id
+                ]
+            ];
+        }
+        $keyboard[] = [
+            [
+                "text" => "💔",
+                "callback_data" => "dislike" . $last_photo_id
+            ],
+            [
+                "text" => "❤",
+                "callback_data" => "like" . $last_photo_id
+            ]
+        ];
+
+        $request->createInlineKeyboard($keyboard);
+        $request->editMessageReplyMarkup();
+
+        if ($next_photo)
+        {
+            unset($keyboard);
+            $request->unsetKeyboard();
+
+            $next_num = (float) $num + 1;
+            $next_photo_id = $next_photo['photo'];
+            $next_file     = $next_photo['file'];
+            $next_address  = $next_photo['address'];
+            $next_caption  = "От тебя до места, где сделана фотография " . round($photo['distance'], 1) . "км";
+            $keyboard[] = [
+                [
+                    "text" => "Следующая",
+                    "callback_data" => "nextGeoImg".$next_num
+                ]
+            ];
+            if ($next_address) {
+                $keyboard[] = [
+                    [
+                        "text" => "Координаты",
+                        "callback_data" => "gl" . $next_photo_id
+                    ]
+                ];
+            }
+            if ($next_file) {
+                $keyboard[] = [
+                    [
+                        "text" => "Оригинал",
+                        "callback_data" => "gf" . $next_photo_id
+                    ]
+                ];
+            }
+            $keyboard[] = [
+                [
+                    "text" => "💔",
+                    "callback_data" => "dislike" . $next_photo_id
+                ],
+                [
+                    "text" => "❤",
+                    "callback_data" => "like" . $next_photo_id
+                ]
+            ];
+
+            $request->createCaption($caption);
+            $request->createInlineKeyboard($keyboard);
+            $request->sendPhoto($photo);
+        }
+        unset($keyboard);
+        $request->unsetKeyboard();
+
+
+        exit();
+    }
 }
 else
 {
@@ -416,9 +516,47 @@ else
         else
         {
             $database->setUserCoordinate();
-            $photo = $database->getNearPhoto();
-            $request->sendMessage($photo['lng']);
-//            $request->sendMessage($database->getPhotosInDistance());
+            $photo    = $database->getNearPhoto();
+            $photo_id = $photo['photo']; 
+            $file     = $photo['file'];
+            $address  = $photo['address'];
+            $caption  = "От тебя до места, где сделана фотография " . round((float) $photo['distance'], 1) . "км";
+            $keyboard[] = [
+                [
+                    "text" => "Следующая",
+                    "callback_data" => "nextGeoImg0"
+                ]
+            ];
+            if ($address) {
+                $keyboard[] = [
+                    [
+                        "text" => "Координаты",
+                        "callback_data" => "gl" . $photo_id
+                    ]
+                ];
+            }
+            if ($file) {
+                $keyboard[] = [
+                    [
+                        "text" => "Оригинал",
+                        "callback_data" => "gf" . $photo_id
+                    ]
+                ];
+            }
+            $keyboard[] = [
+                [
+                    "text" => "💔",
+                    "callback_data" => "dislike" . $photo_id
+                ],
+                [
+                    "text" => "❤",
+                    "callback_data" => "like" . $photo_id
+                ]
+            ];
+
+            $request->createCaption($caption);
+            $request->createInlineKeyboard($keyboard);
+            $request->sendPhoto($photo);
         }
         exit();
 
