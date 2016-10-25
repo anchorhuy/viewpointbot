@@ -533,7 +533,7 @@ else
             $keyboard[]     = [
                 [
                     "text" => "Следующая",
-                    "callback_data" => "nextGeoImg1"
+                    "callback_data" => "nextGeoImg0"
                 ]
             ];
             if ($address) {
