@@ -27,6 +27,7 @@ class SQL
     
     public static $selGeoPhoto = 
        "SELECT
+          photos.photo_id,
           address,
           file_tlgrm_id  as file,
           photo_tlgrm_id as photo,

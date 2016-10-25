@@ -294,9 +294,10 @@ if ($data->message)
             $last_photo = $photo;
         }
 
-        $last_photo_id = $last_photo['photo'];
-        $last_file     = $last_photo['file'];
-        $last_address  = $last_photo['address'];
+        $last_photo_id       = $last_photo['photo_id'];
+        $last_photo_tlgrm_id = $last_photo['photo'];
+        $last_file           = $last_photo['file'];
+        $last_address        = $last_photo['address'];
         if ($last_address) {
             $keyboard[] = [
                 [
@@ -333,10 +334,11 @@ if ($data->message)
             $request->unsetKeyboard();
 
             $next_num = (float) $num + 1;
-            $next_photo_id = $next_photo['photo'];
-            $next_file     = $next_photo['file'];
-            $next_address  = $next_photo['address'];
-            $next_caption  = "До этого места " . round((float) $photo['distance'], 1) . "км";
+            $next_photo_tlgrm_id = $next_photo['photo'];
+            $next_photo_id       = $next_photo['photo'];
+            $next_file           = $next_photo['file'];
+            $next_address        = $next_photo['address'];
+            $next_caption        = "До этого места " . round((float) $photo['distance'], 1) . "км";
             $keyboard[] = [
                 [
                     "text" => "Следующая",
@@ -370,9 +372,9 @@ if ($data->message)
                 ]
             ];
 
-            $request->createCaption($caption);
+            $request->createCaption($next_caption);
             $request->createInlineKeyboard($keyboard);
-            $request->sendPhoto($next_photo_id);
+            $request->sendPhoto($next_photo_tlgrm_id);
         }
         unset($keyboard);
         $request->unsetKeyboard();
@@ -516,17 +518,19 @@ else
         else
         {
             $database->setUserCoordinate();
-            $photo    = $database->getNearPhoto();
+            $photo = $database->getNearPhoto();
             ob_start();
             var_dump($photo);
             $dump = ob_get_contents();
             ob_end_clean();
             $request->sendMessage($dump);
-            $photo_id = $photo['photo']; 
-            $file     = $photo['file'];
-            $address  = $photo['address'];
-            $caption  = "До этого места " . round((float) $photo['distance'], 1) . "км";
-            $keyboard[] = [
+
+            $photo_tlgrm_id = $photo['photo'];
+            $photo_id       = $photo['photo_id'];
+            $file           = $photo['file'];
+            $address        = $photo['address'];
+            $caption        = "До этого места " . round((float) $photo['distance'], 1) . "км";
+            $keyboard[]     = [
                 [
                     "text" => "Следующая",
                     "callback_data" => "nextGeoImg1"
@@ -561,7 +565,7 @@ else
 
             $request->createCaption($caption);
             $request->createInlineKeyboard($keyboard);
-            $request->sendPhoto($photo_id);
+            $request->sendPhoto($photo_tlgrm_id);
         }
         exit();
 
