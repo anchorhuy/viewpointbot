@@ -283,7 +283,7 @@ if ($data->message)
     if (substr($data->data, 0, 10) == "nextGeoImg")
     {
         $request->answerCallbackQuery('Загружаем следующую фотографию..');
-        $num   = substr($data->data, 10);
+        $num   =  (int) substr($data->data, 10) + 1;
         $photo = $database->getNearPhoto($num);
 
         if (count($photo) == 2){
@@ -333,12 +333,12 @@ if ($data->message)
             unset($keyboard);
             $request->unsetKeyboard();
 
-            $next_num = (float) $num + 1;
+            $next_num = $num;
             $next_photo_tlgrm_id = $next_photo['photo'];
             $next_photo_id       = $next_photo['photo'];
             $next_file           = $next_photo['file'];
             $next_address        = $next_photo['address'];
-            $next_caption        = "До этого места " . round((float) $photo['distance'], 1) . "км";
+            $next_caption        = "До этого места " . round((float) $next_photo['distance'], 2) . "км";
             $keyboard[] = [
                 [
                     "text" => "Следующая",
@@ -529,7 +529,7 @@ else
             $photo_id       = $photo['photo_id'];
             $file           = $photo['file'];
             $address        = $photo['address'];
-            $caption        = "До этого места " . round((float) $photo['distance'], 1) . "км";
+            $caption        = "До этого места " . round((float) $photo['distance'], 2) . "км";
             $keyboard[]     = [
                 [
                     "text" => "Следующая",
