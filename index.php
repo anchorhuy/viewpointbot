@@ -283,7 +283,7 @@ if ($data->message)
     if (substr($data->data, 0, 10) == "nextGeoImg")
     {
         $request->answerCallbackQuery('Загружаем следующую фотографию..');
-        $num   =  (int) substr($data->data, 10) + 1;
+        $num   =  (int) substr($data->data, 10);
         $photo = $database->getNearPhoto($num);
 
         if (count($photo) == 2){
@@ -333,7 +333,7 @@ if ($data->message)
             unset($keyboard);
             $request->unsetKeyboard();
 
-            $next_num = $num;
+            $next_num = $num + 1;
             $next_photo_tlgrm_id = $next_photo['photo'];
             $next_photo_id       = $next_photo['photo'];
             $next_file           = $next_photo['file'];
