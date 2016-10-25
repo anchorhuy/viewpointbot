@@ -191,7 +191,7 @@ class Database
 
         return $photo;
     }
-    public function getNearPhoto($n = 0)
+    public function getNearPhoto($n = -1)
     {
         $info = self::getUserGeo();
                 
@@ -199,7 +199,7 @@ class Database
         $values['lng']  = $info['lng'];
         $values['dist'] = $info['dist'];
         
-        if (!$n) {
+        if ($n == -1) {
             $sql = SQL::$selGeoPhoto . "LIMIT 1";
         }
         else {
@@ -330,7 +330,7 @@ class Database
         
         if (count($result) == 1)
         {
-            if (count($result[0])<=2 and !$selectAll){
+            if (count($result[0]) <= 2 and !$selectAll){
                 return $result[0][0];
             }
             return $result[0];

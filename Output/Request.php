@@ -81,7 +81,12 @@ class Request
     
     public function hideKeyboard()
     {
-        $this->keyboard = ['hide_keyboard' => true];
+        $keyboard['reply_markup'] =
+            [
+                'hide_keyboard' => true
+            ];
+        
+        $this->keyboard = $keyboard;
     }
 
     public function forwardMessage()
@@ -106,7 +111,7 @@ class Request
     
     public function sendMessage($text)
     {
-        if (isset($this->keyboard))
+        if ($this->keyboard)
         {
             $parameters = $this->keyboard;
         }
@@ -181,15 +186,14 @@ class Request
     }
     public function createReplyKeyboard($keyboard)
     {
-        if (isset($keyboard)) {
-            $parameters['reply_markup'] =
-                [
-                    'keyboard' => $keyboard,
-                    'one_time_keyboard' => $this->one_time_keyboard,
-                    'resize_keyboard' => $this->resize_keyboard
-                ];
-            $this->keyboard = $parameters;
-        }
+        $parameters['reply_markup'] =
+            [
+                'keyboard' => $keyboard,
+                'one_time_keyboard' => $this->one_time_keyboard,
+                'resize_keyboard' => $this->resize_keyboard
+            ];
+        
+        $this->keyboard = $parameters;
     }
     public function createCaption($caption)
     {
