@@ -328,9 +328,9 @@ class Database
         
         $result = $s->fetchAll();
         
-        if (!isset($result[1]))
+        if (count($result) == 1)
         {
-            if (!isset($result[0][1]) and !$selectAll){
+            if (count($result[0])<=2 and !$selectAll){
                 return $result[0][0];
             }
             return $result[0];

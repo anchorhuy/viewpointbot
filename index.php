@@ -287,7 +287,7 @@ if ($data->message)
         $photo = $database->getNearPhoto($num);
 
         if (count($photo) == 2){
-            $last_photo = $photo[0];
+            $last_photo  = $photo[0];
             $next_photo  = $photo[1];
         }
         else{
@@ -336,7 +336,7 @@ if ($data->message)
             $next_photo_id = $next_photo['photo'];
             $next_file     = $next_photo['file'];
             $next_address  = $next_photo['address'];
-            $next_caption  = "От тебя до места, где сделана фотография " . round($photo['distance'], 1) . "км";
+            $next_caption  = "До этого места " . round((float) $photo['distance'], 1) . "км";
             $keyboard[] = [
                 [
                     "text" => "Следующая",
@@ -525,11 +525,11 @@ else
             $photo_id = $photo['photo']; 
             $file     = $photo['file'];
             $address  = $photo['address'];
-            $caption  = "От тебя до места, где сделана фотография " . round((float) $photo['distance'], 1) . "км";
+            $caption  = "До этого места " . round((float) $photo['distance'], 1) . "км";
             $keyboard[] = [
                 [
                     "text" => "Следующая",
-                    "callback_data" => "nextGeoImg0"
+                    "callback_data" => "nextGeoImg1"
                 ]
             ];
             if ($address) {
