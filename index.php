@@ -285,7 +285,11 @@ if ($data->message)
         $request->answerCallbackQuery('Загружаем следующую фотографию..');
         $num   =  (int) substr($data->data, 10);
         $photo = $database->getNearPhoto($num);
-
+        ob_start();
+        var_dump($photo);
+        $dump = ob_get_contents();
+        ob_end_clean();
+        $request->sendMessage($dump);
         if (count($photo) == 2){
             $last_photo  = $photo[0];
             $next_photo  = $photo[1];
