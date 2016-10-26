@@ -134,7 +134,8 @@ class Database
     }
     public function checkLikesToPay($photo_id)
     {
-        $last_views   = $this->select(SQL::$selLastViews);
+        $values['photo_id'] = $photo_id;
+        $last_views   = $this->select(SQL::$selLastViews, $values);
         $likes_to_pay = $this->select(SQL::$selLikesToPay);
         
         if ($last_views < $likes_to_pay)
@@ -155,6 +156,12 @@ class Database
         ];
         
         return $result;
+    }
+    public function checkAlreadyViewLine($photo_id)
+    {
+        $values['photo_id'] = $photo_id;
+        $values['user_id']  = self::getUserId();
+        return $this->select(SQL::$selCheckAlreadyViewLine, $values);
     }
 
 
@@ -245,10 +252,11 @@ class Database
             $sql = SQL::$selGeoPhoto . "LIMIT " . $n . ", 2";
         }
 
-
         $photo = $this->select($sql, $values);
 
-        if ($photo)
+        unset($values);
+
+        if (!$this->checkAlreadyViewLine($photo['photo_id']))
         {
             $values['user_id']        = $this->getUserId();
             $values['photo_id']       = $photo['photo_id'];

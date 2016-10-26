@@ -237,6 +237,11 @@ class SQL
         WHERE chat_id = :chat_id AND phone IS NOT NULL";
     
     public static $selCheckCoordinate           = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id INNER JOIN coordinates ON photos.photo_id = coordinates.photo_id WHERE photos.status = 0 AND chat_id = :chat_id limit 1";
+    public static $selCheckAlreadyViewLine = 
+       "SELECT TRUE
+        FROM view_history
+        WHERE photo_id = :photo_id AND user_id = :user_id";
+    
     public static $selCheckNewUser              = "SELECT NOT EXISTS                          
                                                   (SELECT *                                 FROM users      WHERE chat_id = :chat_id )";
 
