@@ -253,16 +253,23 @@ class Database
         }
 
         $photo = $this->select($sql, $values);
-
         unset($values);
 
-        if (!$this->checkAlreadyViewLine($photo['photo_id']))
+        if (count($photo) == 2)
+        {
+            $photo_id = $photo[1]['photo_id'];
+        }
+        else
+        {
+            $photo_id = $photo['photo_id'];
+        }
+
+        if (!$this->checkAlreadyViewLine($photo_id))
         {
             $values['user_id']  = $this->getUserId();
-            $values['photo_id'] = $photo['photo_id'];
+            $values['photo_id'] = $photo_id;
             $this->insert(SQL::$insInViewHistory, $values);
         }
-        
         return $photo;
     }
     public function getStartPointViewID($photo_id, $last_views)
