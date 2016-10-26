@@ -239,7 +239,7 @@ if ($data->message)
 
         if ($database->checkAlreadyDislike($photo_id))
         {
-            $request->answerCallbackQuery('Жаль что фотография тебе не понравилась 😓');
+            $request->answerCallbackQuery('😓');
             $database->setDislike($photo_id);
         }
         else
@@ -250,6 +250,7 @@ if ($data->message)
     }
     if (substr($data->data, 0, 2)  == "gf")
     {
+        $request->answerCallbackQuery('Загружаем документ..');
         $photo_id = substr($data->data, 2);
         
         if ($file_photo_id = $database->getFile($photo_id))
@@ -281,6 +282,7 @@ if ($data->message)
     }
     if (substr($data->data, 0, 2)  == "gl")
     {
+        $request->answerCallbackQuery('Загружаем локацию..');
         $photo_id = substr($data->data, 2);
         if ($address = $database->getAddress($photo_id))
         {
@@ -326,7 +328,6 @@ if ($data->message)
             $answer = 'Отправляем жалобу';
             $request->answerCallbackQuery($answer);
             $request->createInlineKeyboard([]);
-            $request->sendMessage($subject_index . ' - ' . $subject . ' - ' . $data->data);
             $request->editMessageReplyMarkup();
             $database->createNewReport($photo_id, $subject_index);
         }
@@ -337,12 +338,6 @@ if ($data->message)
         $request->answerCallbackQuery('Загружаем следующую фотографию..');
         $num   = (int) substr($data->data, 10);
         $photo = $database->getNearPhoto($num);
-
-        ob_start();
-        var_dump($photo);
-        $dump = ob_get_contents();
-        ob_end_clean();
-        $request->sendMessage($dump);
 
         if (count($photo) == 2){
             $last_photo  = $photo[0];
@@ -433,8 +428,16 @@ if ($data->message)
             $request->createCaption($next_caption);
             $request->createInlineKeyboard($keyboard);
             $request->sendPhoto($next_photo_tlgrm_id);
+            $database->updateViews($next_photo_id);
         }
-        $database->updateViews($photo_id);
+        else
+        {
+            $text  = "<b>На указанном расстоянии больше нет фотографий</b>.\n\r\n\r";
+            $text .= "Чтобы изменить радиус введите команду /dist_* (где «*» - целое число).\n\r";
+            $text .= "<i>Пример</i>: /dist_3.";
+            $request->sendMessage($text);            
+        }
+        
         exit();
     }
 }
