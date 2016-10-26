@@ -13,6 +13,12 @@ class SQL
 {
     #INSERT
     public static $insPhoto                 = "INSERT INTO photos       (photo_tlgrm_id, auth_id, status, caption) VALUES (:photo_tlgrm_id, :auth_id, :status, :caption)";
+    public static $insPay                   = "INSERT INTO payment (user_id, `status`, to_pay) VALUES ((SELECT user_id
+                                                         FROM users
+                                                         WHERE chat_id = :chat_id
+                                                         LIMIT 1), 0, (SELECT pay
+                                                                       FROM configuration
+                                                                       LIMIT 1))";
     public static $insInViewHistory         = "INSERT INTO view_history (user_id, photo_id)                        VALUES (:user_id, :photo_id)";
     public static $insPhotoWithoutCaption   = "INSERT INTO photos       (photo_tlgrm_id, auth_id, status)          VALUES (:photo_tlgrm_id, :auth_id, :status)";
     public static $insFile                  = "INSERT INTO files        (file_tlgrm_id, photo_id)                  VALUES (:file_tlgrm_id, :photo_id)";
@@ -55,7 +61,7 @@ class SQL
             FROM view_history
               INNER JOIN users
                 ON users.user_id = view_history.user_id
-            WHERE photo_id = :photo_id AND chat_id = :chat_id AND `like` = 0";
+            WHERE photo_id = :photo_id AND chat_id = :chat_id AND `like` = 1";
     
     public static $selDislike =
         "SELECT TRUE
@@ -63,6 +69,20 @@ class SQL
               INNER JOIN users
                 ON users.user_id = view_history.user_id
             WHERE photo_id = :photo_id AND chat_id = :chat_id AND dislike = 0";
+    
+    public static $selAdminsChatID =
+       "SELECT chat_id
+        FROM admins
+          INNER JOIN users
+            ON admins.user_id = users.user_id
+        WHERE notification = 1";
+    
+    public static $selInfoAboutAuthor =
+       "SELECT chat_id, photo_tlgrm_id
+        FROM photos
+          INNER JOIN users
+            ON photos.auth_id = users.user_id
+        WHERE photo_id = :photo_id";
 
     public static $selInformationAboutThisPhoto =
        "SELECT
@@ -99,6 +119,45 @@ class SQL
         ORDER BY view_id DESC
         LIMIT 1 ";
 
+    public static $selLastViews = 
+       "SELECT last_views
+        FROM photos
+        WHERE photo_id = :photo_id 
+        LIMIT 1";
+    
+    public static $selViewIDStartingPoint = 
+       "SELECT
+          view_id as begin_view_id
+        FROM view_history
+        WHERE photo_id = :photo_id
+        ORDER BY view_id DESC";
+    
+    public static $selViewIDEndingPoint = 
+       "SELECT
+          max(view_id) AS end_view_id
+        FROM view_history
+        WHERE photo_id = :photo_id";
+    
+    public static $selLastLikes =
+       "SELECT count(*)
+        FROM view_history
+        WHERE view_id BETWEEN :start_point AND :end_point AND photo_id = :photo_id AND `like` = 1";
+
+    public static $selViewsToReset =
+       "SELECT
+          reset_views
+        FROM configuration";
+    
+    public static $selLikesToPay =
+       "SELECT
+          need_likes
+        FROM configuration";
+
+    public static $selMoneyToPay =
+       "SELECT
+          pay
+        FROM configuration";
+    
     public static $selInformationAboutPhoto =
         "
         SELECT
@@ -161,14 +220,22 @@ class SQL
     public static $selOnModeration              = "SELECT COUNT(*)                          FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 1 and chat_id = :chat_id";
     public static $selOnPublic                  = "SELECT COUNT(*)                          FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 2 and chat_id = :chat_id";
     public static $selCheckBan                  = "SELECT TRUE                              FROM black_list   WHERE chat_id = :chat_id";
+   
     public static $selCheckReport =
         "SELECT TRUE
             FROM reports
               INNER JOIN users
                 ON users.user_id = reports.user_id
             WHERE chat_id = :chat_id AND photo_id = :photo_id AND subject = :subject";
+    
     public static $selCheckInUpload             = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 0 AND chat_id = :chat_id LIMIT 1";
     public static $selCheckFile                 = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id INNER JOIN files       ON photos.photo_id = files.photo_id       WHERE photos.status = 0 AND chat_id = :chat_id limit 1";
+    
+    public static $selCheckPhone                = 
+        "SELECT TRUE
+        FROM users
+        WHERE chat_id = :chat_id AND phone IS NOT NULL";
+    
     public static $selCheckCoordinate           = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id INNER JOIN coordinates ON photos.photo_id = coordinates.photo_id WHERE photos.status = 0 AND chat_id = :chat_id limit 1";
     public static $selCheckNewUser              = "SELECT NOT EXISTS                          
                                                   (SELECT *                                 FROM users      WHERE chat_id = :chat_id )";
@@ -193,6 +260,18 @@ class SQL
             ON users.user_id = view_history.user_id
         SET `dislike` = 1
         WHERE chat_id = :chat_id AND photo_id = :photo_id AND `dislike` = 0";
+    
+    public static $updNewView =
+       "UPDATE photos
+        SET all_views = all_views + 1, last_views = last_views + 1
+        WHERE photo_id = :photo_id AND status = 0
+        LIMIT 1";
+
+    public static $updResetLastViews =
+       "UPDATE photos
+        SET all_views = all_views + 1, last_views = last_views + 1
+        WHERE photo_id = :photo_id AND status = 0
+        LIMIT 1";
 
     public static $updToModeration = "UPDATE photos SET status        = status+1          WHERE auth_id = :auth_id AND status = 0  LIMIT 1";
     public static $updActivity     = "UPDATE users  SET last_activity = CURRENT_TIMESTAMP WHERE chat_id = :chat_id LIMIT 1";

@@ -32,6 +32,13 @@ class Keyboards
         ]
     ];
 
+    public static $replySendContact = [
+        [
+            "text"            => "Отправить мой номер",
+            "request_contact" => true
+        ]
+    ];
+
     public static $replyDeleteFile = [
         [
             "text" => "Удалить файл"

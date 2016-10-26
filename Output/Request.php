@@ -109,21 +109,23 @@ class Request
         return $this->curl_request_json($parameters);
     }
     
-    public function sendMessage($text)
+    public function sendMessage($text, $chat_id = 0)
     {
         if ($this->keyboard)
         {
             $parameters = $this->keyboard;
         }
 
+        if (!$chat_id) $chat_id = Data::getChatID();
+        
         $parameters['method']                   = "sendMessage";
         $parameters['text']                     = $text;
-        $parameters['chat_id']                  = Data::getChatID();
+        $parameters['chat_id']                  = $chat_id;
         $parameters['parse_mode']               = $this->parse_mode;
 
         return $this->curl_request_json($parameters);
     }
-    public function sendPhoto($photo)
+    public function sendPhoto($photo, $chat_id = 0)
     {
         if (isset($this->keyboard)) {
             $parameters = $this->keyboard;
@@ -133,9 +135,11 @@ class Request
             $parameters['caption'] = $this->caption;
         }
 
+        if (!$chat_id) $chat_id = Data::getChatID();
+
         $parameters['method']        = "sendPhoto";
         $parameters['photo']         = $photo;
-        $parameters['chat_id']       = Data::getChatID();
+        $parameters['chat_id']       = $chat_id;
 
         return $this->curl_request_json($parameters);
     }

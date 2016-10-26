@@ -98,6 +98,11 @@ class Database
         $values = ['chat_id' => Data::getChatID()];
         return $this->select(SQL::$selCheckCoordinate, $values);
     }
+    public function checkIssetPhone()
+    {
+        $values = ['chat_id' => Data::getChatID()];
+        return $this->select(SQL::$selCheckPhone, $values);
+    }
     public function checkAlreadyLike($photo_id)
     {
         $values['chat_id']  = Data::getChatID();
@@ -116,6 +121,40 @@ class Database
         $values['chat_id']  = Data::getChatID();
         $values['photo_id'] = $photo_id;
         return $this->select(SQL::$selCheckReport, $values);
+    }
+    public function checkViews($photo_id)
+    {
+        $values['photo_id'] = $photo_id;
+        $last_views     = $this->select(SQL::$selLastViews, $values);
+        $views_to_reset = $this->select(SQL::$selViewsToReset);
+        
+        if ($last_views > $views_to_reset) {
+            $this->resetLastViews($photo_id);
+        }
+    }
+    public function checkLikesToPay($photo_id)
+    {
+        $last_views   = $this->select(SQL::$selLastViews);
+        $likes_to_pay = $this->select(SQL::$selLikesToPay);
+        
+        if ($last_views < $likes_to_pay)
+            return 0;
+
+        $last_likes = $this->getLastLikes($photo_id, $last_views);
+
+        if ($last_likes < $likes_to_pay)
+            return 0;
+        
+        $this->resetLastViews($photo_id);
+        $this->createNewPay();
+
+        $result = [
+            'views' => $last_views,
+            'likes' => $likes_to_pay,
+            'money' => $this->getMoneyToPay()
+        ];
+        
+        return $result;
     }
 
 
@@ -207,11 +246,46 @@ class Database
         }
         return $this->select($sql, $values);
     }
+    public function getStartPointViewID($photo_id, $last_views)
+    {
+        $values['photo_id'] = $photo_id;
+        $sql = SQL::$selViewIDStartingPoint . " LIMIT " . ($last_views - 1) . ", 1";
+        return $this->select($sql, $values);
+    }
+    public function getEndPointViewID($photo_id)
+    {
+        $values['photo_id'] = $photo_id;
+        return $this->select(SQL::$selViewIDEndingPoint, $values);
+    }
+    public function getLastLikes($photo_id, $last_views)
+    {
+        $values['start_point'] = $this->getStartPointViewID($photo_id,$last_views);
+        $values['end_point']   = $this->getEndPointViewID  ($photo_id);
+        return $this->select(SQL::$selLastLikes, $values);
+    }
+    public function getInfoAboutAuthor($photo_id)
+    {
+        $values['photo_id'] = $photo_id;
+        return $this->select(SQL::$selInfoAboutAuthor, $values);
+    }
+    public function getAdminsChatID()
+    {
+        return $this->select(SQL::$selAdminsChatID);
+    }
+    public function getMoneyToPay()
+    {
+        return $this->select(SQL::$selOnModeration);
+    }
 
     public function updateActivity()
     {
         $values['chat_id'] = Data::getChatID();
         $this->update(SQL::$updActivity, $values);
+    }
+    public function updateViews($photo_id)
+    {
+        $values['photo_id'] = $photo_id;
+        $this->update(SQL::$updNewView, $values);
     }
     
     public function setLike($photo_id)
@@ -271,6 +345,12 @@ class Database
         $values['photo_id'] = $this->getPhotoIDOnUploading();
         $this->insert(SQL::$delFileOnUploading, $values);
     }
+    
+    public function resetLastViews($photo_id)
+    {
+        $values['photo_id'] = $photo_id;
+        $this->update(SQL::$updResetLastViews, $values);
+    }
     public function deleteCoordinate()
     {
         $values['photo_id'] = $this->getPhotoIDOnUploading();
@@ -294,6 +374,10 @@ class Database
         $this->insert(SQL::$insPhotoCoordinate, $values);
     }
 
+    public function createNewPay(){
+        $values['chat_id']   = Data::getChatID();
+        $this->insert(SQL::$insPay, $values);
+    }
     public function createNewUser(){
         $values['user_name'] = Data::getFullName();
         $values['chat_id']   = Data::getChatID();
