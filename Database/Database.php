@@ -244,7 +244,18 @@ class Database
         else {
             $sql = SQL::$selGeoPhoto . "LIMIT " . $n . ", 2";
         }
-        return $this->select($sql, $values);
+
+
+        $photo = $this->select($sql, $values);
+
+        if ($photo)
+        {
+            $values['user_id']        = $this->getUserId();
+            $values['photo_id']       = $photo['photo_id'];
+            $this->insert(SQL::$insInViewHistory, $values);
+        }
+        
+        return $photo;
     }
     public function getStartPointViewID($photo_id, $last_views)
     {
