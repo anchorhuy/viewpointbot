@@ -131,7 +131,6 @@ if ($data->message)
 
                 $request->createInlineKeyboard($keyboard);
                 $request->sendPhoto($photo_tlgrm_id);
-                
                 $database->updateViews($photo_id);
             }
             else
@@ -336,9 +335,15 @@ if ($data->message)
     if (substr($data->data, 0, 10) == "nextGeoImg")
     {
         $request->answerCallbackQuery('Загружаем следующую фотографию..');
-        $num   =  (int) substr($data->data, 10);
+        $num   = (int) substr($data->data, 10);
         $photo = $database->getNearPhoto($num);
-        
+
+        ob_start();
+        var_dump($photo);
+        $dump = ob_get_contents();
+        ob_end_clean();
+        $request->sendMessage($dump);
+
         if (count($photo) == 2){
             $last_photo  = $photo[0];
             $next_photo  = $photo[1];
@@ -616,6 +621,7 @@ else
             $request->createCaption($caption);
             $request->createInlineKeyboard($keyboard);
             $request->sendPhoto($photo_tlgrm_id);
+            $database->updateViews($photo_id);
         }
         exit();
 
@@ -730,8 +736,10 @@ else
             $request->sendMessage($data->chat->id);
             exit();
         }
-        if ($input_text == "/rand_img") {
-            if ($photo = $database->getRandPhoto()) {
+        if ($input_text == "/rand_img")
+        {
+            if ($photo = $database->getRandPhoto())
+            {
                 $photo_id = $photo['photo_id'];
                 $photo_tlgrm_id = $photo['photo_tlgrm_id'];
                 $photo_file_tlgrm_id = $photo['file_tlgrm_id'];
@@ -776,10 +784,14 @@ else
 
                 $request->createInlineKeyboard($keyboard);
                 $request->sendPhoto($photo_tlgrm_id);
-            } else {
+                $database->updateViews($photo_id);
+            }
+            else
+            {
                 $text = 'Вы посмотрели все фотографии из нашей базы';
                 $request->sendMessage($text);
             }
+
             exit();
         }
     }

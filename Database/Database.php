@@ -258,8 +258,8 @@ class Database
 
         if (!$this->checkAlreadyViewLine($photo['photo_id']))
         {
-            $values['user_id']        = $this->getUserId();
-            $values['photo_id']       = $photo['photo_id'];
+            $values['user_id']  = $this->getUserId();
+            $values['photo_id'] = $photo['photo_id'];
             $this->insert(SQL::$insInViewHistory, $values);
         }
         

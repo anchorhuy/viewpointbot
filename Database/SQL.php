@@ -150,7 +150,7 @@ class SQL
     
     public static $selLikesToPay =
        "SELECT
-          need_likes
+          likes_to_pay
         FROM configuration";
 
     public static $selMoneyToPay =
@@ -269,7 +269,7 @@ class SQL
     public static $updNewView =
        "UPDATE photos
         SET all_views = all_views + 1, last_views = last_views + 1
-        WHERE photo_id = :photo_id AND status = 0
+        WHERE photo_id = :photo_id
         LIMIT 1";
 
     public static $updResetLastViews =
