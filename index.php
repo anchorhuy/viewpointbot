@@ -157,6 +157,8 @@ if ($data->message)
 
         $pay_info = $database->checkLikesToPay($photo_id);
 
+        $request->sendMessage("ХЕЛЛОУ1");
+
             ob_start();
             var_dump($pay_info);
             $dump = ob_get_contents();
@@ -167,9 +169,13 @@ if ($data->message)
             $likes = $pay_info['likes'];
             $views = $pay_info['views'];
 
+        $request->sendMessage("ХЕЛЛОУ2");
+
             $author_info    = $database->getInfoAboutAuthor($photo_id);
             $author_chat_id = $author_info['chat_id'];
             $photo_tlgrm_id = $author_info['photo_tlgrm_id'];
+
+        $request->sendMessage("ХЕЛЛОУ3");
 
             ob_start();
             var_dump($author_info);
@@ -180,6 +186,8 @@ if ($data->message)
             $textForAuthor  = "Поздравляю!\n";
             $textForAuthor .= "Твоя фоотография набарала " . $likes . " ❤ за " . $views . " просмотров\n";
 
+        $request->sendMessage("ХЕЛЛОУ4");
+        
             if ($database->checkIssetPhone()) 
             {
                 $textForAuthor .= "Скоро я переведу деньги на твой QIWI 💸";
