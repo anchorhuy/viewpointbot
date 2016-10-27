@@ -139,12 +139,12 @@ class Database
         $likes_to_pay = $this->select(SQL::$selLikesToPay);
         
         if ($last_views < $likes_to_pay)
-            return 0;
+            $result['last_likes'] = '1';
 
         $last_likes = $this->getLastLikes($photo_id, $last_views);
 
         if ($last_likes < $likes_to_pay)
-            return 0;
+            $result['last_likes'] = '1';
         
         $this->resetLastViews($photo_id);
         $this->createNewPay();

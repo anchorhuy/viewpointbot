@@ -203,8 +203,6 @@ if ($data->message)
             else {
                 $request->sendMessage($textForAdmin, $admins_chat_id);
             }
-
-            exit();
         }
 
 
