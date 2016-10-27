@@ -152,6 +152,8 @@ if ($data->message)
             exit();
         }
 
+        $request->sendMessage("ХЕЛЛОУ0");
+
         $request->answerCallbackQuery('Спасибо за ❤');
         $database->setLike($photo_id);
 
@@ -187,7 +189,7 @@ if ($data->message)
             $textForAuthor .= "Твоя фоотография набарала " . $likes . " ❤ за " . $views . " просмотров\n";
 
         $request->sendMessage("ХЕЛЛОУ4");
-        
+
             if ($database->checkIssetPhone()) 
             {
                 $textForAuthor .= "Скоро я переведу деньги на твой QIWI 💸";
