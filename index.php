@@ -156,10 +156,11 @@ if ($data->message)
 
         $request->answerCallbackQuery('Спасибо за ❤');
         $database->setLike($photo_id);
-
-        $pay_info = $database->checkLikesToPay($photo_id);
-
         $request->sendMessage("ХЕЛЛОУ1");
+        $pay_info = $database->checkLikesToPay($photo_id);
+        $request->sendMessage("ХЕЛЛОУ1.1");
+
+
 
             ob_start();
             var_dump($pay_info);
