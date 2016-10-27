@@ -196,7 +196,7 @@ if ($data->message)
             $request->sendPhoto($photo_tlgrm_id, $author_chat_id);
 
             $textForAdmin = "Еще одна фотография набрала необходимой количество ❤";
-            if (array($admins_chat_id = $database->getAdminsChatID()))
+            if (is_array($admins_chat_id = $database->getAdminsChatID()))
             {
                 ob_start();
                 var_dump($admins_chat_id);
