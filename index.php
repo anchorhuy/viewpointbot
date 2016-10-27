@@ -155,7 +155,7 @@ if ($data->message)
         $request->answerCallbackQuery('Спасибо за ❤');
         $database->setLike($photo_id);
 
-        $pay_info = $database->checkLikesToPay($photo_id)
+        $pay_info = $database->checkLikesToPay($photo_id);
 
             ob_start();
             var_dump($pay_info);
@@ -203,7 +203,7 @@ if ($data->message)
             else {
                 $request->sendMessage($textForAdmin, $admins_chat_id);
             }
-        
+
 
 
         exit();
@@ -514,7 +514,7 @@ else
                     $text  = "К текущей фотографии уже был прикреплен документ.\n\r";
                     $text .= "Удали его чтобы загрузить новый";
 
-                    if (!$database->checkIssetCoordinate())
+                    if ($database->checkIssetCoordinate())
                     {
                         $keyboard[] = Keyboards::$replyDeleteAddress;
                     }
@@ -575,7 +575,7 @@ else
                 $text  = "<b>К фотографии уже прикреплена геолокация</b>\n\r.";
                 $text .= "Удали существующую чтобы добавить новую..";
 
-                if (!$database->checkIssetFile())
+                if ($database->checkIssetFile())
                 {
                     $keyboard[] = Keyboards::$replyDeleteFile;
                 }
