@@ -155,8 +155,8 @@ if ($data->message)
         $request->answerCallbackQuery('Спасибо за ❤');
         $database->setLike($photo_id);
 
-        if ($pay_info = $database->checkLikesToPay($photo_id))
-        {
+        $pay_info = $database->checkLikesToPay($photo_id)
+
             ob_start();
             var_dump($pay_info);
             $dump = ob_get_contents();
@@ -203,7 +203,7 @@ if ($data->message)
             else {
                 $request->sendMessage($textForAdmin, $admins_chat_id);
             }
-        }
+        
 
 
         exit();
