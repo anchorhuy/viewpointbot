@@ -287,7 +287,7 @@ class Database
     public function getLastLikes($photo_id, $last_views)
     {
         $values['start_point'] = $this->getStartPointViewID($photo_id, $last_views);
-        $values['end_point']   = $this->getEndPointViewID  ($photo_id);
+        $values['end_point']   = $this->getEndPointViewID($photo_id);
         $values['photo_id']    = $photo_id;
         return $this->select(SQL::$selLastLikes, $values);
     }
@@ -302,7 +302,7 @@ class Database
     }
     public function getMoneyToPay()
     {
-        return $this->select(SQL::$selOnModeration);
+        return $this->select(SQL::$selMoneyToPay);
     }
 
     public function updateActivity()

@@ -130,7 +130,7 @@ class SQL
           view_id as begin_view_id
         FROM view_history
         WHERE photo_id = :photo_id
-        ORDER BY view_id DESC";
+        ORDER BY view_id DESC ";
     
     public static $selViewIDEndingPoint = 
        "SELECT
