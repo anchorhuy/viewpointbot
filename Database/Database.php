@@ -266,8 +266,9 @@ class Database
 
         if (!$this->checkAlreadyViewLine($photo_id))
         {
-            $values['user_id']  = $this->getUserId();
             $values['photo_id'] = $photo_id;
+            $this->update(SQL::$updNewView, $values);
+            $values['user_id']  = $this->getUserId();
             $this->insert(SQL::$insInViewHistory, $values);
         }
         return $photo;
@@ -285,7 +286,7 @@ class Database
     }
     public function getLastLikes($photo_id, $last_views)
     {
-        $values['start_point'] = $this->getStartPointViewID($photo_id,$last_views);
+        $values['start_point'] = $this->getStartPointViewID($photo_id, $last_views);
         $values['end_point']   = $this->getEndPointViewID  ($photo_id);
         return $this->select(SQL::$selLastLikes, $values);
     }

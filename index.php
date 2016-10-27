@@ -142,6 +142,7 @@ if ($data->message)
 
             exit();
     }
+    
     if (substr($data->data, 0, 4)  == "like")
     {
         $photo_id = substr($data->data, 4);
@@ -428,7 +429,6 @@ if ($data->message)
             $request->createCaption($next_caption);
             $request->createInlineKeyboard($keyboard);
             $request->sendPhoto($next_photo_tlgrm_id);
-            $database->updateViews($next_photo_id);
         }
         else
         {
