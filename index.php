@@ -156,27 +156,14 @@ if ($data->message)
         $database->setLike($photo_id);
         $pay_info = $database->checkLikesToPay($photo_id);
 
-            ob_start();
-            var_dump($pay_info);
-            $dump = ob_get_contents();
-            ob_end_clean();
-            $request->sendMessage("pay_info\n\r".$dump);
-
             $money = $pay_info['money'];
-            $likes = $pay_info['likes'];
+            $likes = (int) $pay_info['likes'] + 1;
             $views = $pay_info['views'];
 
 
             $author_info    = $database->getInfoAboutAuthor($photo_id);
             $author_chat_id = $author_info['chat_id'];
             $photo_tlgrm_id = $author_info['photo_tlgrm_id'];
-
-
-            ob_start();
-            var_dump($author_info);
-            $dump = ob_get_contents();
-            ob_end_clean();
-            $request->sendMessage("author_info\n\r".$dump);
 
             $textForAuthor  = "Поздравляю!\n";
             $textForAuthor .= "Твоя фоотография набарала " . $likes . " ❤ за " . $views . " просмотров\n";
@@ -198,13 +185,8 @@ if ($data->message)
             $textForAdmin = "Еще одна фотография набрала необходимой количество ❤";
             if (is_array($admins_chat_id = $database->getAdminsChatID()))
             {
-                ob_start();
-                var_dump($admins_chat_id);
-                $dump = ob_get_contents();
-                ob_end_clean();
-                $request->sendMessage("author_info\n\r".$dump);
-
-                foreach ($admins_chat_id as $admin_chat_id){
+                foreach ($admins_chat_id as $admin_chat_id)
+                {
                     $request->sendMessage($textForAdmin, $admin_chat_id);
                 }
             }
