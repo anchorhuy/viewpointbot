@@ -152,15 +152,9 @@ if ($data->message)
             exit();
         }
 
-        $request->sendMessage("ХЕЛЛОУ0");
-
         $request->answerCallbackQuery('Спасибо за ❤');
         $database->setLike($photo_id);
-        $request->sendMessage("ХЕЛЛОУ1");
         $pay_info = $database->checkLikesToPay($photo_id);
-        $request->sendMessage("ХЕЛЛОУ1.1");
-
-
 
             ob_start();
             var_dump($pay_info);
@@ -172,13 +166,11 @@ if ($data->message)
             $likes = $pay_info['likes'];
             $views = $pay_info['views'];
 
-        $request->sendMessage("ХЕЛЛОУ2");
 
             $author_info    = $database->getInfoAboutAuthor($photo_id);
             $author_chat_id = $author_info['chat_id'];
             $photo_tlgrm_id = $author_info['photo_tlgrm_id'];
 
-        $request->sendMessage("ХЕЛЛОУ3");
 
             ob_start();
             var_dump($author_info);
@@ -189,7 +181,6 @@ if ($data->message)
             $textForAuthor  = "Поздравляю!\n";
             $textForAuthor .= "Твоя фоотография набарала " . $likes . " ❤ за " . $views . " просмотров\n";
 
-        $request->sendMessage("ХЕЛЛОУ4");
 
             if ($database->checkIssetPhone()) 
             {
@@ -204,15 +195,15 @@ if ($data->message)
             $request->createCaption($textForAuthor);
             $request->sendPhoto($photo_tlgrm_id, $author_chat_id);
 
-        ob_start();
-        var_dump($author_info);
-        $dump = ob_get_contents();
-        ob_end_clean();
-        $request->sendMessage("author_info\n\r".$dump);
-
             $textForAdmin = "Еще одна фотография набрала необходимой количество ❤";
             if (array($admins_chat_id = $database->getAdminsChatID()))
             {
+                ob_start();
+                var_dump($admins_chat_id);
+                $dump = ob_get_contents();
+                ob_end_clean();
+                $request->sendMessage("author_info\n\r".$dump);
+
                 foreach ($admins_chat_id as $admin_chat_id){
                     $request->sendMessage($textForAdmin, $admin_chat_id);
                 }
