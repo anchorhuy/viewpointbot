@@ -142,7 +142,7 @@ if ($data->message)
 
             exit();
     }
-    
+
     if (substr($data->data, 0, 4)  == "like")
     {
         $photo_id = substr($data->data, 4);
@@ -157,6 +157,12 @@ if ($data->message)
 
         if ($pay_info = $database->checkLikesToPay($photo_id))
         {
+            ob_start();
+            var_dump($pay_info);
+            $dump = ob_get_contents();
+            ob_end_clean();
+            $request->sendMessage("pay_info\n\r".$dump);
+
             $money = $pay_info['money'];
             $likes = $pay_info['likes'];
             $views = $pay_info['views'];
@@ -164,6 +170,12 @@ if ($data->message)
             $author_info    = $database->getInfoAboutAuthor($photo_id);
             $author_chat_id = $author_info['chat_id'];
             $photo_tlgrm_id = $author_info['photo_tlgrm_id'];
+
+            ob_start();
+            var_dump($author_info);
+            $dump = ob_get_contents();
+            ob_end_clean();
+            $request->sendMessage("author_info\n\r".$dump);
 
             $textForAuthor  = "Поздравляю!\n";
             $textForAuthor .= "Твоя фоотография набарала " . $likes . " ❤ за " . $views . " просмотров\n";
@@ -503,6 +515,13 @@ else
                 if ($database->checkIssetFile()) {
                     $text  = "К текущей фотографии уже был прикреплен документ.\n\r";
                     $text .= "Удали его чтобы загрузить новый";
+
+                    if (!$database->checkIssetCoordinate())
+                    {
+                        $keyboard[] = Keyboards::$replyDeleteAddress;
+                    }
+
+                    $request->createReplyKeyboard($keyboard);
                     $request->sendMessage($text);
 
                     exit();
@@ -555,7 +574,15 @@ else
             }
             else
             {
-                $text = "К фотографии уже прикреплена геолокация, удали существующую чтобы добавить новую.";
+                $text  = "<b>К фотографии уже прикреплена геолокация</b>\n\r.";
+                $text .= "Удали существующую чтобы добавить новую..";
+
+                if (!$database->checkIssetFile())
+                {
+                    $keyboard[] = Keyboards::$replyDeleteFile;
+                }
+
+                $request->createReplyKeyboard($keyboard);
                 $request->sendMessage($text);
 
                 exit();
