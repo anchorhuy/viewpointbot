@@ -288,6 +288,7 @@ class Database
     {
         $values['start_point'] = $this->getStartPointViewID($photo_id, $last_views);
         $values['end_point']   = $this->getEndPointViewID  ($photo_id);
+        $values['photo_id']    = $photo_id;
         return $this->select(SQL::$selLastLikes, $values);
     }
     public function getInfoAboutAuthor($photo_id)
