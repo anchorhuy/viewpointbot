@@ -34,8 +34,10 @@ class Keyboards
 
     public static $replySendContact = [
         [
-            "text"            => "Отправить мой номер",
-            "request_contact" => true
+            [
+                "text"            => "Отправить мой номер",
+                "request_contact" => true
+            ]
         ]
     ];
 

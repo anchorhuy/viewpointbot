@@ -204,6 +204,12 @@ if ($data->message)
             $request->createCaption($textForAuthor);
             $request->sendPhoto($photo_tlgrm_id, $author_chat_id);
 
+        ob_start();
+        var_dump($author_info);
+        $dump = ob_get_contents();
+        ob_end_clean();
+        $request->sendMessage("author_info\n\r".$dump);
+
             $textForAdmin = "Еще одна фотография набрала необходимой количество ❤";
             if (array($admins_chat_id = $database->getAdminsChatID()))
             {
