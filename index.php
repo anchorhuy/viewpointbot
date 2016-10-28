@@ -144,8 +144,8 @@ if ($data->message)
         case 'setThisLocation':
             if ($database->checkUploading())
             {
-                $latitude    = $data->venue->location->latitude;
-                $longitude   = $data->venue->location->longitude;
+                $latitude    = $data->message->venue->location->latitude;
+                $longitude   = $data->message->venue->location->longitude;
                 $coordinate  = $latitude.','.$longitude;
                 $url         = GOOGLE_API_URL_GEOCODE . $coordinate . GOOGLE_API_KEY;
                 $update      = json_decode(file_get_contents($url), true);
