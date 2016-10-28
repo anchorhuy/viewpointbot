@@ -151,7 +151,7 @@ if ($data->message)
                 $update      = json_decode(file_get_contents($url), true);
                 $new_address = $update['results'][0]['formatted_address'];
 
-                $request->sendMessage($url);
+                $request->sendMessage($new_address);
 //
 //                ob_start();
 //                var_dump($user);
@@ -609,7 +609,6 @@ else
                 $update = json_decode(file_get_contents($url), true);
                 $address = $update['results'][0]['formatted_address'];
                 $database->addPhotoCoordinate($address);
-
                 $text = "<b>Спасибо за геолокацию фотографии!</b>\n\r";
             }
             else
