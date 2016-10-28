@@ -268,7 +268,7 @@ class SQL
             ON coordinates.photo_id = photos.photo_id
           INNER JOIN users
             ON photos.auth_id = users.user_id
-        SET coordinates.coordinate = :coordinate,
+        SET coordinates.coordinate = PointFromText(:coordinate),
             address    = :address
         WHERE chat_id = :chat_id AND status = 0";
 
