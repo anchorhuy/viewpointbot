@@ -133,6 +133,15 @@ class Keyboards
         ]
     ];
 
+    public static $inlineHelpAfterUploadingPhoto = [
+        [
+            [
+                "text"          => "Прикрепить это место",
+                "callback_data" => "setThisLocation"
+            ]
+        ]
+    ];
+
     public static $inlineHowToAttachLocation = [
         [
             [
