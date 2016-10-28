@@ -186,6 +186,22 @@ class Request
 
         return $this->curl_request_json($parameters);
     }
+    public function sendLocation(array $location)
+    {
+        if ($this->keyboard) {
+            $parameters = $this->keyboard;
+        }
+
+        $lat = $location['lat'];
+        $lng = $location['lng'];
+
+        $parameters['method']    = "sendLocation";
+        $parameters['latitude']  = $lat;
+        $parameters['longitude'] = $lng;
+        $parameters['chat_id']   = Data::getChatID();
+
+        return $this->curl_request_json($parameters);
+    }
 
     public function createInlineKeyboard($keyboard)
     {

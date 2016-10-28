@@ -151,13 +151,6 @@ if ($data->message)
                 $update      = json_decode(file_get_contents($url), true);
                 $new_address = $update['results'][0]['formatted_address'];
 
-                $request->sendMessage($new_address);
-//
-//                ob_start();
-//                var_dump($user);
-//                $dump = ob_get_contents();
-//                ob_end_clean();
-
                 $keyboard[] = Keyboards::$replySendToModeration;
                 $keyboard[] = Keyboards::$replyDeleteAddress;
 
@@ -348,7 +341,16 @@ if ($data->message)
                 ];
                 $request->createInlineKeyboard($keyboard);
             }
-            $request->sendVenue($venue);
+            
+            if ($venue['address']) 
+            {
+                $request->sendVenue($venue);
+            }
+            else 
+            {
+                $location = $venue;
+                $request->sendLocation($venue);
+            }
         }
         else
         {
@@ -763,7 +765,7 @@ else
             $text .= '- самостоятельно прикрепить локацию';
             $request->createInlineKeyboard(Keyboards::$inlineHowToAttachLocation);
             $request->sendMessage($text);
-
+            $request->hideKeyboard();
             exit();
         }
         if ($input_text == "/start")
