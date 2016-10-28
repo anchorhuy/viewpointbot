@@ -268,8 +268,8 @@ class SQL
             ON coordinates.photo_id = photos.photo_id
           INNER JOIN users
             ON photos.auth_id = users.user_id
-        SET `coordinate` = :coordinate,
-            `address`    = :address
+        SET coordinates.coordinate = :coordinate,
+            address    = :address
         WHERE chat_id = :chat_id AND status = 0";
 
     public static $updLike =
