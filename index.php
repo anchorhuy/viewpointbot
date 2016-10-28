@@ -640,12 +640,13 @@ else
 
             $request->createReplyKeyboard($keyboard);
             $request->sendMessage($text);
+            
+            exit();
         }
-        else
-        {
-            $database->setUserCoordinate();
-            $photo = $database->getNearPhoto();
-
+        
+        $database->setUserCoordinate();
+        
+        if ($photo = $database->getNearPhoto()){
             $photo_tlgrm_id = $photo['photo'];
             $photo_id       = $photo['photo_id'];
             $file           = $photo['file'];
@@ -689,6 +690,9 @@ else
             $request->sendPhoto($photo_tlgrm_id);
             $database->updateViews($photo_id);
         }
+
+       
+        
         exit();
     }
     if ($input_text = $data->text)
@@ -700,10 +704,6 @@ else
                 $database->sendToModeration();
                 $request->hideKeyboard();
                 $text = "<b>Фотография успешно отправлена на модерацию</b>.\n\r";
-                if (!$database->checkLimit())
-                {
-                    $text .= "Загрузи еще!\n\r";
-                }
                 $request->sendMessage($text);
                 exit();
             }
