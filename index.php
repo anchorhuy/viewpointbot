@@ -146,10 +146,17 @@ if ($data->message)
             {
                 $latitude    = $data->venue->location->latitude;
                 $longitude   = $data->venue->location->longitude;
-                $coordinate  = $latitude. ',' .$longitude;
+                $coordinate  = $latitude.','.$longitude;
                 $url         = GOOGLE_API_URL_GEOCODE . $coordinate . GOOGLE_API_KEY;
                 $update      = json_decode(file_get_contents($url), true);
                 $new_address = $update['results'][0]['formatted_address'];
+
+                $request->sendMessage($url);
+//
+//                ob_start();
+//                var_dump($user);
+//                $dump = ob_get_contents();
+//                ob_end_clean();
 
                 $keyboard[] = Keyboards::$replySendToModeration;
                 $keyboard[] = Keyboards::$replyDeleteAddress;
@@ -595,7 +602,7 @@ else
             $keyboard[] = Keyboards::$replyDeleteAddress;
 
             if (!$database->checkIssetCoordinate()) {
-                $latitude = $data->location->latitude;
+                $latitude  = $data->location->latitude;
                 $longitude = $data->location->longitude;
 
                 $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&language=ru&result_type=street_address&key=AIzaSyAoSshruro4rvjdMicj1c0mvchKAVLMBg4";
