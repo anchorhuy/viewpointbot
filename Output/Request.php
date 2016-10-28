@@ -39,6 +39,37 @@ class Request
         }
     }
 
+
+    public function hideKeyboard()
+    {
+        $keyboard['reply_markup'] =
+            [
+                'hide_keyboard' => true
+            ];
+
+        $this->keyboard = $keyboard;
+    }
+
+    public function forwardMessage()
+    {
+        $parameters['method']        = "forwardMessage";
+        $parameters['from_chat_id']  = Data::getChatID();
+        $parameters['chat_id']       = Data::getChatID();
+        $parameters['message_id']    = Data::getMessageID();
+
+        return $this->curl_request_json($parameters);
+    }
+
+    public function getFile()
+    {
+        $parameters['method']        = "getFile";
+        $parameters['from_chat_id']  = Data::getChatID();
+        $parameters['chat_id']       = Data::getChatID();
+        $parameters['message_id']    = Data::getMessageID();
+
+        return $this->curl_request_json($parameters);
+    }
+    
     public function answerCallbackQuery($text, $show_alert = false)
     {
         $parameters['method']            = "answerCallbackQuery";
@@ -77,36 +108,6 @@ class Request
 
         return $this->curl_request_json($parameters);
 
-    }
-    
-    public function hideKeyboard()
-    {
-        $keyboard['reply_markup'] =
-            [
-                'hide_keyboard' => true
-            ];
-        
-        $this->keyboard = $keyboard;
-    }
-
-    public function forwardMessage()
-    {
-        $parameters['method']        = "forwardMessage";
-        $parameters['from_chat_id']  = Data::getChatID();
-        $parameters['chat_id']       = Data::getChatID();
-        $parameters['message_id']    = Data::getMessageID();
-
-        return $this->curl_request_json($parameters);
-    }
-
-    public function getFile()
-    {
-        $parameters['method']        = "getFile";
-        $parameters['from_chat_id']  = Data::getChatID();
-        $parameters['chat_id']       = Data::getChatID();
-        $parameters['message_id']    = Data::getMessageID();
-        
-        return $this->curl_request_json($parameters);
     }
     
     public function sendMessage($text, $chat_id = 0)
@@ -159,17 +160,28 @@ class Request
 
         return $this->curl_request_json($parameters);
     }
-    public function sendVenue(array $address)
+    public function sendVenue(array $venue)
     {
-        if (isset($this->keyboard)) {
+        if ($this->keyboard) {
             $parameters = $this->keyboard;
         }
+        
+        if ($venue['title']) {
+            $title = $venue['title'];
+        }
+        else {
+            $title = 'Фотография сделана здесь';
+        }
 
+        $lat = $venue['lat'];
+        $lng = $venue['lng'];
+        $adr = $venue['address'];
+        
         $parameters['method']    = "sendVenue";
-        $parameters['latitude']  = $address['lat'];
-        $parameters['longitude'] = $address['lng'];;
-        $parameters['title']     = 'Фотография сделана здесь';
-        $parameters['address']   = $address['address'];
+        $parameters['latitude']  = $lat;
+        $parameters['longitude'] = $lng;
+        $parameters['title']     = $title;
+        $parameters['address']   = $adr;
         $parameters['chat_id']   = Data::getChatID();
 
         return $this->curl_request_json($parameters);
@@ -177,16 +189,12 @@ class Request
 
     public function createInlineKeyboard($keyboard)
     {
-        if (isset($keyboard)) {
-
-            $parameters['reply_markup'] =
-                [
-                    'inline_keyboard' => $keyboard
-                ];
-
-            $this->keyboard = $parameters;
-        }
-
+        $parameters['reply_markup'] =
+            [
+                'inline_keyboard' => $keyboard
+            ];
+        
+        $this->keyboard = $parameters;
     }
     public function createReplyKeyboard($keyboard)
     {
@@ -201,11 +209,8 @@ class Request
     }
     public function createCaption($caption)
     {
-        if ($caption) {
-            $this->caption = $caption;
-        }
+        $this->caption = $caption;
     }
-    
     
     public function unsetOneTimeKeyboard(){
         $this->one_time_keyboard = false;

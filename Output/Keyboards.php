@@ -124,5 +124,23 @@ class Keyboards
         ]
     ];
 
+    public static $inlineSetThisLocation = [
+        [
+            [
+                "text"          => "Прикрепить это место",
+                "callback_data" => "setThisLocation"
+            ]
+        ]
+    ];
+
+    public static $inlineHowToAttachLocation = [
+        [
+            [
+                "text"          => "Как прикрепить локацию?",
+                "callback_data" => "howToAttachLocation"
+            ]
+        ]
+    ];
+
 }
 

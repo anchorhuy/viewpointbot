@@ -8,7 +8,11 @@ define('LIMIT_PICS', 20);
 
 define('UPLOADS_TO_TRUSTEE', 1000);
 
-define('ADMIN_CHAT_ID', 96993623);
+define('GOOGLE_API_KEY', '&key=AIzaSyAoSshruro4rvjdMicj1c0mvchKAVLMBg4');
+
+define('GOOGLE_API_URL_FIND_PLACE', 'https://maps.googleapis.com/maps/api/place/textsearch/json?language=ru&query=');
+
+define('GOOGLE_API_URL_GEOCODE', 'https://maps.googleapis.com/maps/api/geocode/json?language=ru&result_type=street_address&latlng=');
 
 
 //database

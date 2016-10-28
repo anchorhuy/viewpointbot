@@ -164,7 +164,11 @@ class Database
         return $this->select(SQL::$selCheckAlreadyViewLine, $values);
     }
 
-
+    public function getCoordinatePhotoOnUploading()
+    {
+        $values = ['chat_id' => Data::getChatID()];
+        return $this->select(SQL::$selCoordinatePhotoOnUploading, $values);
+    }
     public function getUserDistance()
     {
         $values['chat_id'] = Data::getChatID();
@@ -314,8 +318,17 @@ class Database
     {
         $values['photo_id'] = $photo_id;
         $this->update(SQL::$updNewView, $values);
+    }   
+    public function updatePhotoCoordinate($address)
+    {
+        $values['address']    = $address;
+        $values['coordinate'] = 'POINT(' . Data::getLatitude() . " " . Data::getLongitude() . ')';
+        $values['chat_id']    = Data::getChatID();
+
+        $this->update(SQL::$updPhotoCoordinate, $values);
     }
-    
+
+
     public function setLike($photo_id)
     {
         $values['chat_id']  = Data::getChatID();
