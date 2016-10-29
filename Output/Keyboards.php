@@ -133,21 +133,24 @@ class Keyboards
         ]
     ];
 
-    public static $inlineHelpAfterUploadingPhoto = [
+    public static $inlineHowToAttachLocation = [
         [
-            [
-                "text"          => "Прикрепить это место",
-                "callback_data" => "setThisLocation"
-            ]
+            "text"          => "Как указать место?",
+            "callback_data" => "howToAttachLocation"
         ]
     ];
 
-    public static $inlineHowToAttachLocation = [
+    public static $inlineHowToAttachFile = [
         [
-            [
-                "text"          => "Как прикрепить локацию?",
-                "callback_data" => "howToAttachLocation"
-            ]
+            "text"          => "Как прикрепить оригинал?",
+            "callback_data" => "howToAttachFile"
+        ]
+    ];
+
+    public static $inlineHowToAttachLocationForRetards = [
+        [
+            "text"          => "Не до конца понял, покажите видео",
+            "callback_data" => "howToAttachLocationForRetards"
         ]
     ];
 

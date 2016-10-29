@@ -5,14 +5,14 @@ require_once("Autoloader.php");
 
 Autoloader::autoloadRegister();
 
-use Types\Message              as Message;
-use Types\CallbackQuery        as CallbackQuery;
+//use Types\Message              as Message;
+//use Types\CallbackQuery        as CallbackQuery;
 
 use Output\Request    as Request;
 use Output\Keyboards  as Keyboards;
 
 use Database\Database as Database;
-use Database\SQL      as SQL;
+//use Database\SQL      as SQL;
 
 use Input\Data as Data;
 
@@ -30,8 +30,7 @@ $request  = new Request();
 
 if ($data->message)
 {
-    switch ($data->data)
-    {
+    switch ($data->data) {
         case 'nextRandImg':
 
             # Запрос на следующую картинку
@@ -39,9 +38,9 @@ if ($data->message)
 
             # Айди прошлой фотографии
             $last_photo = $database->getInformationAboutLastPhoto();
-            $last_photo_id        = $last_photo['photo_id'];
-            $last_photo_file_id   = $last_photo['file_tlgrm_id'];
-            $last_photo_address   = $last_photo['address'];
+            $last_photo_id = $last_photo['photo_id'];
+            $last_photo_file_id = $last_photo['file_tlgrm_id'];
+            $last_photo_address = $last_photo['address'];
 //
 //            if ($database->checkIsItLastPhoto($last_photo_id)){
 //                $keyboard[] = [
@@ -60,13 +59,13 @@ if ($data->message)
                 ];
             }
             if ($last_photo_file_id) {
-                    $keyboard[] = [
-                        [
-                            "text" => "Оригинал",
-                            "callback_data" => "gf" . $last_photo_id
-                        ]
-                    ];
-                }
+                $keyboard[] = [
+                    [
+                        "text" => "Оригинал",
+                        "callback_data" => "gf" . $last_photo_id
+                    ]
+                ];
+            }
             $keyboard[] = [
                 [
                     "text" => "💔",
@@ -84,13 +83,12 @@ if ($data->message)
             $request->unsetKeyboard();
             unset($keyboard);
 
-            if ($photo = $database->getRandPhoto())
-            {
-                $photo_id            = $photo['photo_id'];
-                $photo_tlgrm_id      = $photo['photo_tlgrm_id'];
+            if ($photo = $database->getRandPhoto()) {
+                $photo_id = $photo['photo_id'];
+                $photo_tlgrm_id = $photo['photo_tlgrm_id'];
                 $photo_file_tlgrm_id = $photo['file_tlgrm_id'];
-                $photo_caption       = $photo['caption'];
-                $photo_address       = $photo['address'];
+                $photo_caption = $photo['caption'];
+                $photo_address = $photo['address'];
 
                 $keyboard[] = [
                     [
@@ -132,9 +130,7 @@ if ($data->message)
                 $request->createInlineKeyboard($keyboard);
                 $request->sendPhoto($photo_tlgrm_id);
                 $database->updateViews($photo_id);
-            }
-            else
-            {
+            } else {
                 $text = 'У меня больше нет новых фотографий 😥\n\r';
                 $text = 'Попробуй немного позже';
                 $request->sendMessage($text);
@@ -142,53 +138,44 @@ if ($data->message)
 
             exit();
         case 'setThisLocation':
-            if ($database->checkUploading())
-            {
-                $latitude    = $data->message->venue->location->latitude;
-                $longitude   = $data->message->venue->location->longitude;
-                $coordinate  = $latitude.','.$longitude;
-                $url         = GOOGLE_API_URL_GEOCODE . $coordinate . GOOGLE_API_KEY;
-                $update      = json_decode(file_get_contents($url), true);
+            if ($database->checkUploading()) {
+                $latitude = $data->message->venue->location->latitude;
+                $longitude = $data->message->venue->location->longitude;
+                $coordinate = $latitude . ',' . $longitude;
+                $url = GOOGLE_API_URL_GEOCODE . $coordinate . GOOGLE_API_KEY;
+                $update = json_decode(file_get_contents($url), true);
                 $new_address = $update['results'][0]['formatted_address'];
 
                 $keyboard[] = Keyboards::$replySendToModeration;
                 $keyboard[] = Keyboards::$replyDeleteAddress;
 
-                if($database->checkIssetCoordinate())
-                {
+                if ($database->checkIssetCoordinate()) {
                     $database->updatePhotoCoordinate($new_address);
-                    $text  = "Координаты были успешно обновлены\n\r.";
-                }
-                else
-                {
+                    $text = "Координаты были успешно обновлены\n\r.";
+                } else {
                     $database->addPhotoCoordinate($new_address);
                     $text = "<b>Выбранное место успешно прикреплено к фотографии!</b>\n\r";
                 }
 
-                if ($database->checkIssetFile())
-                {
+                if ($database->checkIssetFile()) {
                     $keyboard[] = Keyboards::$replyDeleteFile;
                     $text .= "Теперь можно отправить её на модерацию.\n\r";
-                }
-                else
-                {
+                } else {
                     $text .= "Прикрепи оригинал документом чтобы люди смогли оценить ее по достоинству.\n\r";
                 }
 
                 $request->createReplyKeyboard($keyboard);
                 $request->sendMessage($text);
-            }
-            else
-            {
+            } else {
                 $database->setUserCoordinate();
                 $photo = $database->getNearPhoto();
 
                 $photo_tlgrm_id = $photo['photo'];
-                $photo_id       = $photo['photo_id'];
-                $file           = $photo['file'];
-                $address        = $photo['address'];
-                $caption        = "До этого места " . round((float) $photo['distance'], 2) . "км";
-                $keyboard[]     = [
+                $photo_id = $photo['photo_id'];
+                $file = $photo['file'];
+                $address = $photo['address'];
+                $caption = "До этого места " . round((float)$photo['distance'], 2) . "км";
+                $keyboard[] = [
                     [
                         "text" => "Следующая",
                         "callback_data" => "nextGeoImg0"
@@ -227,6 +214,34 @@ if ($data->message)
                 $database->updateViews($photo_id);
             }
             exit();
+            break;
+        case 'howToAttachLocation':
+            $text = "<b>Указать место можно двумя способами:</b> \n\r\n\r";
+            $text .= "<i>1</i> \n\r";
+            $text .= "Отправить название объекта, после чего будут выведены найденные места, среди которых можно выбрать нужное и прикрепить квашей фотографии\n\r";
+            $text .= "<i>Пример запроса: гос дума</i>\n\r\n\r";
+            $text .= "<i>2</i> \n\r";
+            $text .= "Самостоятельно найти на карте точку и отправить ее в виде локации\n\r";
+            $keyboard[] = Keyboards::$inlineHowToAttachLocationForRetards;
+            $keyboard[] = Keyboards::$inlineHowToAttachFile;
+            $request->createInlineKeyboard($keyboard);
+            $request->editMessageReplyMarkup();
+            $request->editMessageText($text);
+            break;
+        case 'howToAttachFile':
+            $text  = "Нажми на 📎 в нижнем левом углу и выбери «Location».\n\r\n\r";
+            $text .= "Если ты находишься в месте, где сделана фотография, то можешь сразу нажать «Send my current location».\n\r";
+            $text .= "Если ты находишься в месте, где сделана фотография, то можешь сразу нажать «Send my current location».\n\r";
+            $text .= "Отправить название объекта, после чего будут выведены найденные места, среди которых можно выбрать нужное и прикрепить квашей фотографии\n\r";
+            $text .= "<i>Пример запроса: гос дума</i>\n\r\n\r";
+            $text .= "<i>2</i> \n\r";
+            $text .= "Самостоятельно найти на карте точку и отправить ее в виде локации\n\r";
+            $keyboard[] = Keyboards::$inlineHowToAttachLocationForRetards;
+            $keyboard[] = Keyboards::$inlineHowToAttachFile;
+            $request->createInlineKeyboard($keyboard);
+            $request->editMessageReplyMarkup();
+            $request->editMessageText($text);
+            break;
     }
 
     if (substr($data->data, 0, 4)  == "like")
@@ -544,8 +559,10 @@ else
         
         unset($keyboard);
         $text = "<i>Если что-то не понятно, то нажми на соответствующую кнопку под этим сообщением</i>.";
-
-        
+        $keyboard[] = Keyboards::$inlineHowToAttachLocation;
+        $keyboard[] = Keyboards::$inlineHowToAttachFile;
+        $request->createReplyKeyboard($keyboard);
+        $request->sendMessage($text);
 
         exit();
     }
@@ -759,7 +776,7 @@ else
             }
             else
             {
-                $text  = "Я не смог найти «".$input_text."» 😥\n\r";
+                $text  = "Я не смог найти «".$input_text."» 😥 \n\r";
             }
 
             $text .= "Попробуй:\n\r";
@@ -792,12 +809,7 @@ else
             $text .= "Чтобы узнать подробности введи (или просто нажми): /partner" . "\n\r\n\r";
 
             $request->createInlineKeyboard(Keyboards::$inlineGetStarted);
-            $test = $request->sendMessage($text);
-            ob_start();
-            var_dump($test);
-            $dump = ob_get_contents();
-            ob_end_clean();
-            $request->sendMessage($dump);
+            $request->sendMessage($text);
 
             exit();
         }

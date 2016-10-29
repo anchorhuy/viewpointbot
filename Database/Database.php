@@ -66,12 +66,12 @@ class Database
     }
     public function checkAdmin()
     {
-        if ( Data::getChatID() == ADMIN_CHAT_ID ){
-            return 1;
-        }
-        else {
-            return 0;
-        }
+//        if ( Data::getChatID() == ADMIN_CHAT_ID ){
+//            return 1;
+//        }
+//        else {
+//            return 0;
+//        }
     }
     public function checkTrustee()
     {
@@ -327,7 +327,6 @@ class Database
 
         $this->update(SQL::$updPhotoCoordinate, $values);
     }
-
 
     public function setLike($photo_id)
     {
