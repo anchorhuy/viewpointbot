@@ -96,15 +96,18 @@ class Request
         return $this->curl_request_json($parameters);
 
     }
-    public function editMessageReplyMarkup()
+    public function editMessageReplyMarkup($message_id = 0, $chat_id = 0)
     {
         if ($this->keyboard) {
             $parameters = $this->keyboard;
         }
 
+        $message_id ?: $message_id = Data::getMessageID();
+        $chat_id    ?: $chat_id    = Data::getChatID();
+
         $parameters['method']     = "editMessageReplyMarkup";
-        $parameters['message_id'] = Data::getMessageID();
-        $parameters['chat_id']    = Data::getChatID();
+        $parameters['message_id'] = $message_id;
+        $parameters['chat_id']    = $chat_id;
 
         return $this->curl_request_json($parameters);
 

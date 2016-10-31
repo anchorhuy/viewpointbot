@@ -40,6 +40,30 @@ class Keyboards
             ]
         ]
     ];
+    public static $replyDefault = [
+        [
+            [
+                "text"             => "Ближайшие Поинты 📍",
+                "request_location" => true
+            ]
+        ],
+
+        [
+            [
+                "text"             => "Случайный Поинт 🔮"
+            ]
+        ],
+
+        [
+            [
+                "text"            => "Помощь ℹ"
+            ],
+            [
+                "text"            => "Настройки ⚙"
+            ]
+        ]
+
+    ];
 
     public static $replyDeleteFile = [
         [
@@ -147,10 +171,10 @@ class Keyboards
         ]
     ];
 
-    public static $inlineHowToAttachLocationForRetards = [
+    public static $inlineHowToAttachLocationInDetails = [
         [
-            "text"          => "Не до конца понял, покажите видео",
-            "callback_data" => "howToAttachLocationForRetards"
+            "text"          => "Как отправить локацию?",
+            "callback_data" => "howToAttachLocationInDetails"
         ]
     ];
 

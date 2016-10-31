@@ -41,15 +41,6 @@ if ($data->message)
             $last_photo_id = $last_photo['photo_id'];
             $last_photo_file_id = $last_photo['file_tlgrm_id'];
             $last_photo_address = $last_photo['address'];
-//
-//            if ($database->checkIsItLastPhoto($last_photo_id)){
-//                $keyboard[] = [
-//                    [
-//                        "text" => "Следующая",
-//                        "callback_data" => "nextRandImg"
-//                    ]
-//                ];
-//            }
             if ($last_photo_address) {
                 $keyboard[] = [
                     [
@@ -131,8 +122,8 @@ if ($data->message)
                 $request->sendPhoto($photo_tlgrm_id);
                 $database->updateViews($photo_id);
             } else {
-                $text = 'У меня больше нет новых фотографий 😥\n\r';
-                $text = 'Попробуй немного позже';
+                $text = "У меня больше нет новых фотографий 😥\n\r";
+                $text = "Попробуй немного позже";
                 $request->sendMessage($text);
             }
 
@@ -222,25 +213,31 @@ if ($data->message)
             $text .= "<i>Пример запроса: гос дума</i>\n\r\n\r";
             $text .= "<i>2</i> \n\r";
             $text .= "Самостоятельно найти на карте точку и отправить ее в виде локации\n\r";
-            $keyboard[] = Keyboards::$inlineHowToAttachLocationForRetards;
+            $keyboard[] = Keyboards::$inlineHowToAttachLocationInDetails;
             $keyboard[] = Keyboards::$inlineHowToAttachFile;
             $request->createInlineKeyboard($keyboard);
             $request->editMessageReplyMarkup();
             $request->editMessageText($text);
+            exit();
+            break;
+        case 'howToAttachLocationInDetails':
+            $text  = "Нажми на 📎 в нижнем левом углу и выбери «Location»;\n\r";
+            $text .= "Если ты находишься на месте, где сделана фотография нажми «Send my current location».\n\r";
+            $text .= "Если же текущее местоположение отличается, то нужно перетаскивая точку по карте найти именно то место, где сделана фотография.\n\r\n\r";
+            $keyboard[] = Keyboards::$inlineHowToAttachFile;
+            $request->createInlineKeyboard($keyboard);
+            $request->editMessageReplyMarkup();
+            $request->editMessageText($text);
+            exit();
             break;
         case 'howToAttachFile':
-            $text  = "Нажми на 📎 в нижнем левом углу и выбери «Location».\n\r\n\r";
-            $text .= "Если ты находишься в месте, где сделана фотография, то можешь сразу нажать «Send my current location».\n\r";
-            $text .= "Если ты находишься в месте, где сделана фотография, то можешь сразу нажать «Send my current location».\n\r";
-            $text .= "Отправить название объекта, после чего будут выведены найденные места, среди которых можно выбрать нужное и прикрепить квашей фотографии\n\r";
-            $text .= "<i>Пример запроса: гос дума</i>\n\r\n\r";
-            $text .= "<i>2</i> \n\r";
-            $text .= "Самостоятельно найти на карте точку и отправить ее в виде локации\n\r";
-            $keyboard[] = Keyboards::$inlineHowToAttachLocationForRetards;
-            $keyboard[] = Keyboards::$inlineHowToAttachFile;
+            $text  = "Нажми на 📎 в нижнем левом углу и выбери «File»;\n\r";
+            $text .= "Среди фотографий выбери ту, которая только что была загружена тобой\n\r";
+            $keyboard[] = Keyboards::$inlineHowToAttachLocation;
             $request->createInlineKeyboard($keyboard);
             $request->editMessageReplyMarkup();
             $request->editMessageText($text);
+            exit();
             break;
     }
 
@@ -551,8 +548,8 @@ else
         $database->sendToUploading();
 
         $text  = "Отлично, фотография загружена!\n\r\n\r";
-        $text .= "📎 Теперь нужно указать место, где она была сделана\n\r";
-        $text .= "📎 Еще можешь прикрепить оригинал фотографии, так ты получишь больше ❤.\n\r\n\r";
+        $text .= "Теперь нужно указать место, где она была сделана\n\r";
+        $text .= "Еще можешь прикрепить оригинал фотографии, так ты получишь больше ❤.\n\r\n\r";
         $keyboard[] = Keyboards::$replySendToModeration;
         $request->createReplyKeyboard($keyboard);
         $request->sendMessage($text);
@@ -662,9 +659,7 @@ else
             
             exit();
         }
-        
         $database->setUserCoordinate();
-        
         if ($photo = $database->getNearPhoto()){
             $photo_tlgrm_id = $photo['photo'];
             $photo_id       = $photo['photo_id'];
@@ -709,9 +704,6 @@ else
             $request->sendPhoto($photo_tlgrm_id);
             $database->updateViews($photo_id);
         }
-
-       
-        
         exit();
     }
     if ($input_text = $data->text)
@@ -720,9 +712,18 @@ else
         {
             if ($input_text == 'Отправить на модерацию')
             {
-                $database->sendToModeration();
-                $request->hideKeyboard();
-                $text = "<b>Фотография успешно отправлена на модерацию</b>.\n\r";
+                if ($database->checkIssetCoordinate())
+                {
+                    $database->sendToModeration();
+                    $text = "<b>Фотография успешно отправлена на модерацию</b>.\n\r";
+                    $request->createReplyKeyboard(Keyboards::$replyDefault);
+                }
+                else
+                {
+                    $text = "<b>Чтобы отправить Фотографию на модерацию нужно прикрепить к ней место</b>.\n\r";
+                    $keyboard[] = Keyboards::$inlineHowToAttachLocation;
+                    $request->createInlineKeyboard($keyboard);
+                }
                 $request->sendMessage($text);
                 exit();
             }
@@ -772,7 +773,7 @@ else
                     $request->sendVenue($venue);
                 }
 
-                $text  = '<b>Нет нужного места?</b>\n\r';
+                $text  = "<b>Нет нужного места?</b>\n\r";
             }
             else
             {
@@ -808,16 +809,19 @@ else
             $text .= "Ты можешь учавствовать в <b>партнерской программе</b> загружая свои фотографии." . "\n\r";
             $text .= "Чтобы узнать подробности введи (или просто нажми): /partner" . "\n\r\n\r";
 
-            $request->createInlineKeyboard(Keyboards::$inlineGetStarted);
-            $request->sendMessage($text);
+            $request->createReplyKeyboard(Keyboards::$replyDefault);
+            $result = $request->sendMessage($text);
 
+            $request->unsetKeyboard();
+            $request->createInlineKeyboard(Keyboards::$inlineGetStarted);
+            $request->editMessageReplyMarkup($result['message_id'], $result['chat']['id']);
             exit();
         }
         if ($input_text == "/chatid") {
             $request->sendMessage($data->chat->id);
             exit();
         }
-        if ($input_text == "/rand_img")
+        if ($input_text == "Случайный Поинт 🔮")
         {
             if ($photo = $database->getRandPhoto())
             {
