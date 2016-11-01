@@ -43,14 +43,14 @@ class Keyboards
     public static $replyDefault = [
         [
             [
-                "text"             => "Ближайшие Поинты 📍",
+                "text"             => "Ближайший Point",
                 "request_location" => true
             ]
         ],
 
         [
             [
-                "text"             => "Случайный Поинт 🔮"
+                "text"             => "Случайный Point"
             ]
         ],
 

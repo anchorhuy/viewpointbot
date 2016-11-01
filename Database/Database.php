@@ -227,8 +227,20 @@ class Database
     public function getRandPhoto()
     {
         $values['chat_id'] = Data::getChatID();
-        $n     = rand(0 , $this->select(SQL::$selCountUnwatchedPhoto, $values) - 1);
-        $photo = $this->select(SQL::$selInformationAboutThisPhoto . " LIMIT " . $n . ", 1", $values);
+        $user_settings = $this->select(SQL::$selUserSettings,$values);
+        
+        $count_sql = SQL::$selCountUnwatchedPhoto;
+        $photo_sql = SQL::$selInformationAboutRandomPhoto;
+        
+        if ($user_settings['only_sights']) 
+        {
+            $count_sql .= " AND sight = 1";
+            $photo_sql .= " AND sight = 1 ";
+        }
+        
+        $count = $this->select($count_sql, $values);
+        $n     = rand(0 , $count - 1);
+        $photo = $this->select($photo_sql." LIMIT ".$n.", 1", $values);
 
         unset($values);
 

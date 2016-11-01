@@ -31,6 +31,8 @@ class SQL
     #SELECT
     public static $selRandPhoto = "SELECT photo_tlgrm_id, photo_id, caption FROM photos       WHERE photo_id NOT IN (SELECT photo_id FROM view_history INNER JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id)";
     
+    public static $selRandSight = "SELECT photo_tlgrm_id, photo_id, caption FROM photos       WHERE photo_id NOT IN (SELECT photo_id FROM view_history INNER JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id)";
+    
     public static $selGeoPhoto = 
        "SELECT
           photos.photo_id,
@@ -52,6 +54,33 @@ class SQL
           x(coordinate) BETWEEN (:lat - (:dist / 69)) AND (:lat + (:dist / 69))
           AND
           y(coordinate) BETWEEN (:lng - :dist / abs(cos(radians(:lat)) * 69)) AND (:lng + :dist / abs(cos(radians(:lat)) * 69))
+        
+        HAVING distance < :dist
+        ORDER BY distance ";
+    
+    public static $selGeoSight = 
+       "SELECT
+          photos.photo_id,
+          x(coordinate) as address,
+          file_tlgrm_id  as file,
+          photo_tlgrm_id as photo,
+          6371 * 2 * ASIN(SQRT(
+                              POWER(SIN((:lat - abs(x(coordinate))) * pi() / 180 / 2),
+                                    2) + COS(:lat * pi() / 180) * COS(abs(x(coordinate)) *
+                                                                      pi() / 180) * POWER(SIN((:lng - y(coordinate)) *
+                                                                                              pi() / 180 / 2), 2))) AS distance
+        FROM photos
+          LEFT JOIN coordinates
+            ON photos.photo_id = coordinates.photo_id
+          LEFT JOIN files
+            ON photos.photo_id = files.photo_id
+        
+        WHERE
+          x(coordinate) BETWEEN (:lat - (:dist / 69)) AND (:lat + (:dist / 69))
+          AND
+          y(coordinate) BETWEEN (:lng - :dist / abs(cos(radians(:lat)) * 69)) AND (:lng + :dist / abs(cos(radians(:lat)) * 69))
+          AND 
+          photos.sight = 1
         
         HAVING distance < :dist
         ORDER BY distance ";
@@ -84,7 +113,7 @@ class SQL
             ON photos.auth_id = users.user_id
         WHERE photo_id = :photo_id";
 
-    public static $selInformationAboutThisPhoto =
+    public static $selInformationAboutRandomPhoto =
        "SELECT
           photo_tlgrm_id,
           photos.photo_id,
@@ -101,7 +130,6 @@ class SQL
                                         INNER JOIN view_history
                                           ON view_history.user_id = users.user_id
                                       WHERE chat_id = :chat_id)";
-
     public static $selInformationAboutLastPhoto =
         "
         SELECT
@@ -200,8 +228,24 @@ class SQL
         WHERE chat_id = :chat_id
         LIMIT 1";
     
+    public static $selUserSettings =
+        "SELECT
+         only_sights
+        FROM users
+        WHERE chat_id = :chat_id
+        LIMIT 1";
+    
     public static $selLastWatchedPhotoID        = "SELECT photo_id                          FROM view_history INNER JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id ORDER BY view_id DESC LIMIT 1";
-    public static $selCountUnwatchedPhoto       = "SELECT count(*)                          FROM photos       WHERE photo_id NOT IN (SELECT photo_id FROM view_history LEFT JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id)";
+   
+    public static $selCountUnwatchedPhoto       =
+        "SELECT count(*)
+        FROM photos
+        WHERE photo_id NOT IN (SELECT photo_id
+                               FROM view_history
+                                 LEFT JOIN users
+                                   ON view_history.user_id = users.user_id
+                               WHERE chat_id = :chat_id)";
+    
     public static $selPhotoIDOnUploading        = "SELECT photo_id                          FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 0 AND chat_id = :chat_id limit 1";
     public static $selPhotoFileIDOnUploading    = "SELECT photo_tlgrm_id                    FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 0 AND chat_id = :chat_id limit 1";
     public static $selUserID                    = "SELECT user_id                           FROM users        WHERE chat_id  = :chat_id";
