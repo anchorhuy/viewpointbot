@@ -217,14 +217,17 @@ class Request
     }
     public function createReplyKeyboard($keyboard)
     {
-        $parameters['reply_markup'] =
-            [
-                'keyboard' => $keyboard,
-                'one_time_keyboard' => $this->one_time_keyboard,
-                'resize_keyboard' => $this->resize_keyboard
-            ];
-        
-        $this->keyboard = $parameters;
+        if ($keyboard)
+        {
+            $parameters['reply_markup'] =
+                [
+                    'keyboard' => $keyboard,
+                    'one_time_keyboard' => $this->one_time_keyboard,
+                    'resize_keyboard' => $this->resize_keyboard
+                ];
+
+            $this->keyboard = $parameters; 
+        }
     }
     public function createCaption($caption)
     {

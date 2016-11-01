@@ -526,22 +526,25 @@ else
             exit();
         }
         elseif ($database->checkUploading()) {
-            $caption = "Нужно отправить данную фотографию на модерацию чтобы загрузить новую.\n\n";
-            $photo   = $database->getPhotoFileIDOnUploading();
-            $keyboard[] = Keyboards::$replySendToModeration;
-            
-            if ($database->checkIssetCoordinate()) {
-                $caption .= "❤ Геопозиция фотографии определена.\n";
+            if ($database->checkIssetCoordinate())
+            {
+                $caption    = "Отправь этот Point на модерацию чтобы загрузить новый\n";
+                $keyboard[] = Keyboards::$replySendToModeration;
                 $keyboard[] = Keyboards::$replyDeleteAddress;
-            } else {
-                $caption .= "💔 Геопозиция фотографии не определена.\n";
+                if ($database->checkIssetFile()) {
+                    $keyboard[] = Keyboards::$replyDeleteFile;
+                }
             }
-            if ($database->checkIssetFile()) {
-                $caption .= "❤ Оригинал фотографии загружен.\n";
-                $keyboard[] = Keyboards::$replyDeleteFile;
-            } else {
-                $caption .= "💔 Оригинал фотографии не загружен.\n";
+            else
+            {
+                $caption  = "Прикрепи к этой фотографии место и отправь на модерацию\n";
+                $caption .= "После этого ты сможешь добавить следующий Point\n";
+                if ($database->checkIssetFile()) {
+                    $keyboard[] = Keyboards::$replyDeleteFile;
+                }
             }
+            
+            $photo   = $database->getPhotoFileIDOnUploading();
             
             $request->createCaption($caption);
             $request->createReplyKeyboard($keyboard);
@@ -741,7 +744,7 @@ else
                 $request->sendMessage($text);
                 exit();
             }
-            if ($input_text == 'Удалить адрес')
+            if ($input_text == 'Удалить место')
             {
                 $database->deleteCoordinate();
                 $text = "Адрес удален";

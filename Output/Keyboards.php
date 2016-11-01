@@ -73,7 +73,7 @@ class Keyboards
 
     public static $replyDeleteAddress = [
         [
-            "text" => "Удалить адрес"
+            "text" => "Удалить место"
         ]
     ];
     
