@@ -279,6 +279,7 @@ if ($data->message)
             $request->createCaption($textForAuthor);
             $request->sendPhoto($photo_tlgrm_id, $author_chat_id);
 
+            $request->unsetKeyboard();
             $textForAdmin = "Еще одна фотография набрала необходимой количество ❤";
             if (is_array($admins_chat_id = $database->getAdminsChatID())) {
                 foreach ($admins_chat_id as $admin_chat_id) {
@@ -526,21 +527,24 @@ else
         }
         elseif ($database->checkUploading()) {
             $caption = "Нужно отправить данную фотографию на модерацию чтобы загрузить новую.\n\n";
-            $photo = $database->getPhotoFileIDOnUploading();
-
-            if ($database->checkIssetFile()) {
-                $caption .= "❤ Оригинал фотографии загружен.\n";
-            } else {
-                $caption .= "💔 Оригинал фотографии не загружен.\n";
-            }
-
+            $photo   = $database->getPhotoFileIDOnUploading();
+            $keyboard[] = Keyboards::$replySendToModeration;
+            
             if ($database->checkIssetCoordinate()) {
                 $caption .= "❤ Геопозиция фотографии определена.\n";
+                $keyboard[] = Keyboards::$replyDeleteAddress;
             } else {
                 $caption .= "💔 Геопозиция фотографии не определена.\n";
             }
-
+            if ($database->checkIssetFile()) {
+                $caption .= "❤ Оригинал фотографии загружен.\n";
+                $keyboard[] = Keyboards::$replyDeleteFile;
+            } else {
+                $caption .= "💔 Оригинал фотографии не загружен.\n";
+            }
+            
             $request->createCaption($caption);
+            $request->createReplyKeyboard($keyboard);
             $request->sendPhoto($photo);
             exit();
         }
