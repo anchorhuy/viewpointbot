@@ -350,7 +350,7 @@ class Database
     {
         $values['caption']    = Data::getVenueTitle();
         $values['chat_id']    = Data::getChatID();
-        $this->update(SQL::$updPhotoCoordinate, $values);
+        $this->update(SQL::$updPhotoCaption, $values);
     }
     public function updateUserCoordinate()
     {
