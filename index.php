@@ -138,16 +138,16 @@ if ($data->message)
 
                 if ($database->checkIssetCoordinate()) {
                     $database->updatePhotoCoordinate($new_address);
-                    $text = "Координаты были успешно обновлены\n\r.";
+                    $text = "<b>Координаты были успешно обновлены.</b>\n\r\n\r";
                 } else {
                     $database->addPhotoCoordinate($new_address);
-                    $text = "<b>Выбранное место успешно прикреплено к фотографии!</b>\n\r";
+                    $text = "<b>Выбранное место успешно прикреплено к фотографии!</b>\n\r\n\r";
                 }
                 if ($database->checkIssetFile()) {
                     $keyboard[] = Keyboards::$replyDeleteFile;
-                    $text .= "Теперь можно отправить её на модерацию.\n\r";
+                    $text .= "Теперь можно отправить Point на модерацию.\n\r";
                 } else {
-                    $text .= "Прикрепи оригинал документом чтобы люди смогли оценить ее по достоинству.\n\r";
+                    $text .= "Отправь ту же фотографию документом чтобы люди смогли увидеть ее в полном разрешении.\n\r";
                 }
 
                 $database->updatePhotoCaption();
