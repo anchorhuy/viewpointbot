@@ -39,7 +39,7 @@ class SQL
           x(coordinate) as address,
           file_tlgrm_id  as file,
           photo_tlgrm_id as photo,
-          caption 
+          caption,
           6371 * 2 * ASIN(SQRT(
                               POWER(SIN((:lat - abs(x(coordinate))) * pi() / 180 / 2),
                                     2) + COS(:lat * pi() / 180) * COS(abs(x(coordinate)) *
