@@ -160,12 +160,12 @@ class Data {
     {
         if (self::$Message)
         {
-            $title = self::$Message->Venue->title;
+            $title = self::$Message->venue->title;
         }
 
         if (self::$CallbackQuery)
         {
-            $title = self::$CallbackQuery->message->Venue->title;
+            $title = self::$CallbackQuery->message->venue->title;
         }
 
         return $title;
