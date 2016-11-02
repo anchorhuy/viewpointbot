@@ -822,14 +822,15 @@ else
 
             exit();
         }
-        if ($input_text == "Насйтройки")
+        if ($input_text == "Настройки")
         {
             $user_distance = $database->getUserDistance();
             
-            $text  = "На данный момент ты можешь:"."\n\r";
-            $text .= "<b>- Измнеить радиус поиска Point'a</b>,"."\n\r";
-            $text .= "для этого введи и отправь мне команду /dist* где «*» - радиус в километрах, число должно быть целым."."\n\r";
-            $text .= "<b>- Включить\выключить Sight Mode</b>,"."\n\r";
+            $text  = "На данный момент ты можешь:"."\n\r\n\r";
+            $text .= "<b>- Измнеить радиус поиска</b>."."\n\r";
+            $text .= "Для этого введи и отправь мне команду /dist* где «*» - радиус в километрах."."\n\r\n\r";
+            $text .= "<i>Число должно быть целым.</i>"."\n\r\n\r";
+            $text .= "<b>- Включить или выключить Sight Mode</b>."."\n\r";
             $text .= "<i>Sight Mode</i> - режим поиска, при котором тебе будут показываться только точки (Point) <b>достопримечательностей</b>"."\n\r\n\r";
             $text .= "Текущий радиус поиска - ".$user_distance." км";
             
@@ -846,7 +847,7 @@ else
         if (substr($input_text, 0, 5)  == "/dist")
         {
             $new_distance = (int) substr($input_text, 5);
-            if (is_int($new_distance)) {
+            if ($new_distance != 0) {
                 if ($new_distance < 7000)
                 {
                     $database->updateUserDistance($new_distance);
