@@ -78,7 +78,7 @@ if ($data->message)
 
                 $keyboard[] = [
                     [
-                        "text" => "Следующая",
+                        "text" => "Следующий",
                         "callback_data" => "nextRandImg"
                     ]
                 ];
@@ -423,7 +423,7 @@ if ($data->message)
             $next_caption       .= "До этого места " . round((float) $next_photo['distance'], 2) . "км";
             $keyboard[] = [
                 [
-                    "text" => "Следующая",
+                    "text" => "Следующий",
                     "callback_data" => "nextGeoImg".$next_num
                 ]
             ];
