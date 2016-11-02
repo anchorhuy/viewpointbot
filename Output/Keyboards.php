@@ -40,6 +40,7 @@ class Keyboards
             ]
         ]
     ];
+    
     public static $replyDefault = [
         [
             [
@@ -56,10 +57,10 @@ class Keyboards
 
         [
             [
-                "text"            => "Помощь ℹ"
+                "text"            => "Помощь"
             ],
             [
-                "text"            => "Настройки ⚙"
+                "text"            => "Настройки"
             ]
         ]
 
@@ -159,8 +160,22 @@ class Keyboards
 
     public static $inlineHowToAttachLocation = [
         [
-            "text"          => "Как указать место?",
+            "text"          => "Как прикрепить место?",
             "callback_data" => "howToAttachLocation"
+        ]
+    ];
+
+    public static $inlineSetSightMode = [
+        [
+            "text"          => "Включить Sight Mode",
+            "callback_data" => "setSightMode"
+        ]
+    ];
+
+    public static $inlineUnsetSightMode = [
+        [
+            "text"          => "Выключить Sight Mode",
+            "callback_data" => "unsetSightMode"
         ]
     ];
 

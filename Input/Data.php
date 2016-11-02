@@ -156,6 +156,21 @@ class Data {
         return $longitude;
     }
     
+    public static function getVenueTitle()
+    {
+        if (self::$Message)
+        {
+            $title = self::$Message->title;
+        }
+
+        if (self::$CallbackQuery)
+        {
+            $title = self::$CallbackQuery->message->title;
+        }
+
+        return $title;
+    }
+    
 }
 
 

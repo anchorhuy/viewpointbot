@@ -163,6 +163,12 @@ class Database
         $values['user_id']  = self::getUserId();
         return $this->select(SQL::$selCheckAlreadyViewLine, $values);
     }
+    public function checkSightMode()
+    {
+        $values['chat_id'] = Data::getChatID();
+        $result = $this->select(SQL::$selUserSettings, $values);
+        return $result['only_sights'];
+    }
 
     public function getCoordinatePhotoOnUploading()
     {
@@ -226,17 +232,18 @@ class Database
     }
     public function getRandPhoto()
     {
-        $values['chat_id'] = Data::getChatID();
-        $user_settings = $this->select(SQL::$selUserSettings,$values);
+        
+        $user_sight_settings = $this->checkSightMode();
         
         $count_sql = SQL::$selCountUnwatchedPhoto;
-        $photo_sql = SQL::$selInformationAboutRandomPhoto;
+        $photo_sql = SQL::$selRandomPhoto;
         
-        if ($user_settings['only_sights']) 
+        if ($user_sight_settings) 
         {
             $count_sql .= " AND sight = 1";
             $photo_sql .= " AND sight = 1 ";
         }
+        $values['chat_id'] = Data::getChatID();
         
         $count = $this->select($count_sql, $values);
         $n     = rand(0 , $count - 1);
@@ -339,6 +346,26 @@ class Database
 
         $this->update(SQL::$updPhotoCoordinate, $values);
     }
+    public function updatePhotoCaption()
+    {
+        $values['caption']    = Data::getVenueTitle();
+        $values['chat_id']    = Data::getChatID();
+        $this->update(SQL::$updPhotoCoordinate, $values);
+    }
+    public function updateUserCoordinate()
+    {
+        $values['coordinate'] = 'POINT(' . Data::getLatitude() . " " . Data::getLongitude() . ')';
+        $values['chat_id']    = Data::getChatID();
+
+        $this->update(SQL::$updUserCoordinate, $values);
+    }
+    public function updateUserDistance($distance)
+    {
+        $values['distance'] = $distance;
+        $values['chat_id']  = Data::getChatID();
+
+        $this->update(SQL::$updUserDistance, $values);
+    }
 
     public function setLike($photo_id)
     {
@@ -346,18 +373,22 @@ class Database
         $values['photo_id'] = $photo_id;
         return $this->update(SQL::$updLike, $values);
     }
+    public function setSightMode()
+    {
+        $values['chat_id']  = Data::getChatID();
+        $this->update(SQL::$updSetSightMode, $values);
+    }
     public function setDislike($photo_id)
     {
         $values['chat_id']  = Data::getChatID();
         $values['photo_id'] = $photo_id;
         return $this->update(SQL::$updDislike, $values);
     }
-    public function setUserCoordinate()
+    
+    public function unsetSightMode()
     {
-        $values['coordinate'] = 'POINT(' . Data::getLatitude() . " " . Data::getLongitude() . ')';
-        $values['chat_id']    = Data::getChatID();
-
-        $this->insert(SQL::$updUserCoordinate, $values);
+        $values['chat_id']  = Data::getChatID();
+        $this->update(SQL::$updUnsetSightMode, $values);
     }
 
     public function sendToUploading()

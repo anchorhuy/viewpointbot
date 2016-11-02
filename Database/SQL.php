@@ -39,6 +39,7 @@ class SQL
           x(coordinate) as address,
           file_tlgrm_id  as file,
           photo_tlgrm_id as photo,
+          caption 
           6371 * 2 * ASIN(SQRT(
                               POWER(SIN((:lat - abs(x(coordinate))) * pi() / 180 / 2),
                                     2) + COS(:lat * pi() / 180) * COS(abs(x(coordinate)) *
@@ -105,15 +106,8 @@ class SQL
           INNER JOIN users
             ON admins.user_id = users.user_id
         WHERE notification = 1";
-    
-    public static $selInfoAboutAuthor =
-       "SELECT chat_id, photo_tlgrm_id
-        FROM photos
-          INNER JOIN users
-            ON photos.auth_id = users.user_id
-        WHERE photo_id = :photo_id";
 
-    public static $selInformationAboutRandomPhoto =
+    public static $selRandomPhoto =
        "SELECT
           photo_tlgrm_id,
           photos.photo_id,
@@ -305,6 +299,10 @@ class SQL
         "UPDATE users
          SET `coordinate` = PointFromText(:coordinate)
          WHERE chat_id = :chat_id";
+    public static $updUserDistance = 
+       "UPDATE users
+        SET distance = :distance
+        WHERE chat_id = :chat_id";
     
     public static $updPhotoCoordinate = 
        "UPDATE coordinates
@@ -341,8 +339,25 @@ class SQL
         SET all_views = all_views + 1, last_views = last_views + 1
         WHERE photo_id = :photo_id AND status = 0
         LIMIT 1";
+    
+    public static $updPhotoCaption =
+       "UPDATE photos
+          INNER JOIN users
+            ON user_id = auth_id
+        SET caption = :caption
+        WHERE chat_id = :chat_id AND status = 0 AND caption IS NULL";
+    
+    public static $updSetSightMode =
+       "UPDATE users
+        SET only_sights = 1
+        WHERE chat_id = :chat_id";
+    
+    public static $updUnsetSightMode =
+       "UPDATE users
+        SET only_sights = 0
+        WHERE chat_id = :chat_id";
 
-    public static $updToModeration = "UPDATE photos SET status        = status+1          WHERE auth_id = :auth_id AND status = 0  LIMIT 1";
+    public static $updToModeration = "UPDATE photos SET status        = status+1          WHERE auth_id = :auth_id AND status = 0 ";
     public static $updActivity     = "UPDATE users  SET last_activity = CURRENT_TIMESTAMP WHERE chat_id = :chat_id LIMIT 1";
 
 
