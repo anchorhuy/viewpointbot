@@ -147,59 +147,13 @@ if ($data->message)
                     $keyboard[] = Keyboards::$replyDeleteFile;
                     $text .= "Теперь можно отправить Point на модерацию.\n\r";
                 } else {
-                    $text .= "Отправь ту же фотографию документом чтобы люди смогли увидеть ее в полном разрешении.\n\r";
+                    $text .= "Отправь ту же фотографию документом чтобы пользователи увидели ее в полном разрешении.\n\r";
                 }
 
                 $database->updatePhotoCaption();
                 $request->createReplyKeyboard($keyboard);
                 $request->sendMessage($text);
-            } else {
-                $database->updateUserCoordinate();
-                $photo = $database->getNearPhoto();
-
-                $photo_tlgrm_id = $photo['photo'];
-                $photo_id = $photo['photo_id'];
-                $file = $photo['file'];
-                $address = $photo['address'];
-                $caption = "До этого места " . round((float)$photo['distance'], 2) . "км";
-                $keyboard[] = [
-                    [
-                        "text" => "Следующая",
-                        "callback_data" => "nextGeoImg0"
-                    ]
-                ];
-                if ($address) {
-                    $keyboard[] = [
-                        [
-                            "text" => "Координаты",
-                            "callback_data" => "gl" . $photo_id
-                        ]
-                    ];
-                }
-                if ($file) {
-                    $keyboard[] = [
-                        [
-                            "text" => "Оригинал",
-                            "callback_data" => "gf" . $photo_id
-                        ]
-                    ];
-                }
-                $keyboard[] = [
-                    [
-                        "text" => "💔",
-                        "callback_data" => "dislike" . $photo_id
-                    ],
-                    [
-                        "text" => "❤",
-                        "callback_data" => "like" . $photo_id
-                    ]
-                ];
-
-                $request->createCaption($caption);
-                $request->createInlineKeyboard($keyboard);
-                $request->sendPhoto($photo_tlgrm_id);
-                $database->updateViews($photo_id);
-            }
+            } 
             exit();
             break;
         case 'howToAttachLocation':
@@ -935,7 +889,7 @@ else
                         break;
                 }
 
-                $text  = "<b>Найдено ".$results_num." ".$place."</b>\n\r";
+                $text  = "<b>Найдено ".$results_num." ".$place."</b>\n\r\n\r";
 
                 if ($results_num > 1){
                     $text .= "Какое из них прикрепить к загружаемой фотографии?\n\r\n\r";
