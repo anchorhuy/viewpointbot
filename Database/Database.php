@@ -51,19 +51,6 @@ class Database
             return 0;
         }
     }
-    public function checkIsItLastPhoto($photo_id)
-    {
-        $values['chat_id']        = Data::getChatID();
-        $values['photo_id']       = $photo_id;
-        $select = $this->select(SQL::$selIsItLastPhoto, $values);
-        
-        if ($select['max_id'] == $select['cur_id']) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
-    }
     public function checkAdmin()
     {
 //        if ( Data::getChatID() == ADMIN_CHAT_ID ){
@@ -88,12 +75,7 @@ class Database
         $values = ['chat_id' => Data::getChatID()];
         return $this->select(SQL::$selCheckInUpload, $values);
     }
-    public function checkIssetFile()
-    {
-        $values = ['chat_id' => Data::getChatID()];
-        return $this->select(SQL::$selCheckFile, $values);
-    }
-    public function checkIssetCoordinate()
+    public function checkIssetLocation()
     {
         $values = ['chat_id' => Data::getChatID()];
         return $this->select(SQL::$selCheckCoordinate, $values);
@@ -170,40 +152,25 @@ class Database
         return $result['only_sights'];
     }
 
-    public function getCoordinatePhotoOnUploading()
-    {
-        $values = ['chat_id' => Data::getChatID()];
-        return $this->select(SQL::$selCoordinatePhotoOnUploading, $values);
-    }
     public function getUserDistance()
     {
         $values['chat_id'] = Data::getChatID();
         return $this->select(SQL::$selUserDistance, $values);
     }
-    public function getAddress($photo_id)
+    public function getLocation($photo_id)
     {
         $values['photo_id'] = $photo_id;
         return $this->select(SQL::$selAddress, $values);
-    }
-    public function getFile($photo_id)
-    {
-        $values['photo_id'] = $photo_id;
-        return $this->select(SQL::$selFile, $values);
     }
     public function getUserId()
     {
         $values['chat_id'] = Data::getChatID();
         return $this->select(SQL::$selUserID, $values);
     }
-    public function getUserGeo()
+    public function getUserLocation()
     {
         $values['chat_id'] = Data::getChatID();
         return $this->select(SQL::$selUserGeo, $values);
-    }
-    public function getFileIdOnUploading()
-    {
-        $values['chat_id'] = Data::getChatID();
-        return $this->select(SQL::$selPhotoFileIDOnUploading, $values);
     }
     public function getPhotoFileIDOnUploading()
     {
@@ -215,12 +182,7 @@ class Database
         $values['chat_id'] = Data::getChatID();
         return $this->select(SQL::$selPhotoIDOnUploading, $values);
     }
-    public function getLastWatchedPhotoID()
-    {
-        $values['chat_id'] = Data::getChatID();
-        return $this->select(SQL::$selLastWatchedPhotoID, $values);
-    }
-    public function getInformationAboutLastPhoto()
+    public function getInformationAboutLastWatchedPhoto()
     {
         $values['chat_id'] = Data::getChatID();
         return $this->select(SQL::$selInformationAboutLastPhoto, $values, true);
@@ -262,7 +224,7 @@ class Database
     }
     public function getNearPhoto($n = -1)
     {
-        $info = self::getUserGeo();
+        $info = self::getUserLocation();
                 
         $values['lat']  = $info['lat'];
         $values['lng']  = $info['lng'];
@@ -274,26 +236,29 @@ class Database
         else {
             $sql = SQL::$selGeoPhoto . "LIMIT " . $n . ", 2";
         }
-
-        $photo = $this->select($sql, $values);
-        unset($values);
-
-        if (count($photo) == 2)
+        
+        if ($photo = $this->select($sql, $values))
         {
-            $photo_id = $photo[1]['photo_id'];
-        }
-        else
-        {
-            $photo_id = $photo['photo_id'];
+            unset($values);
+            
+            if (count($photo) == 2)
+            {
+                $photo_id = $photo[1]['photo_id'];
+            }
+            else
+            {
+                $photo_id = $photo['photo_id'];
+            }
+
+            if (!$this->checkAlreadyViewLine($photo_id) and $photo)
+            {
+                $values['photo_id'] = $photo_id;
+                $this->update(SQL::$updNewView, $values);
+                $values['user_id']  = $this->getUserId();
+                $this->insert(SQL::$insInViewHistory, $values);
+            }
         }
 
-        if (!$this->checkAlreadyViewLine($photo_id))
-        {
-            $values['photo_id'] = $photo_id;
-            $this->update(SQL::$updNewView, $values);
-            $values['user_id']  = $this->getUserId();
-            $this->insert(SQL::$insInViewHistory, $values);
-        }
         return $photo;
     }
     public function getStartPointViewID($photo_id, $last_views)
@@ -338,7 +303,7 @@ class Database
         $values['photo_id'] = $photo_id;
         $this->update(SQL::$updNewView, $values);
     }   
-    public function updatePhotoCoordinate($address)
+    public function updatePhotoLocation($address)
     {
         $values['address']    = $address;
         $values['coordinate'] = 'POINT(' . Data::getLatitude() . " " . Data::getLongitude() . ')';
@@ -352,7 +317,7 @@ class Database
         $values['chat_id']    = Data::getChatID();
         $this->update(SQL::$updPhotoCaption, $values);
     }
-    public function updateUserCoordinate()
+    public function updateUserLocation()
     {
         $values['coordinate'] = 'POINT(' . Data::getLatitude() . " " . Data::getLongitude() . ')';
         $values['chat_id']    = Data::getChatID();
@@ -384,12 +349,6 @@ class Database
         $values['photo_id'] = $photo_id;
         return $this->update(SQL::$updDislike, $values);
     }
-    
-    public function unsetSightMode()
-    {
-        $values['chat_id']  = Data::getChatID();
-        $this->update(SQL::$updUnsetSightMode, $values);
-    }
 
     public function sendToUploading()
     {
@@ -410,44 +369,24 @@ class Database
         $values['auth_id']        = $this->getUserId();
         $this->insert(SQL::$updToModeration, $values);
     }
-    public function sendToPublic()
-    {
-        $values['photo_tlgrm_id'] = Data::getPhotoFileID();
-        $values['auth_id']        = $this->getUserId();
-        $values['status']         = 2;
-
-        if (Data::getCaption()) {
-            $values['caption']    = Data::getCaption();
-        }
-
-        $this->insert(SQL::$insPhoto, $values);
-    }
-    
-    public function deleteFile()
-    {
-        $values['photo_id'] = $this->getPhotoIDOnUploading();
-        $this->insert(SQL::$delFileOnUploading, $values);
-    }
     
     public function resetLastViews($photo_id)
     {
         $values['photo_id'] = $photo_id;
         $this->update(SQL::$updResetLastViews, $values);
     }
-    public function deleteCoordinate()
+    public function deletePhotoLocation()
     {
         $values['photo_id'] = $this->getPhotoIDOnUploading();
         $this->insert(SQL::$delCoordinateOnUploading, $values);
     }
-    
-    public function addFile()
+    public function unsetSightMode()
     {
-        $values['file_tlgrm_id']  = Data::getDocumentFileID();
-        $values['photo_id']       = $this->getPhotoIDOnUploading();
-
-        $this->insert(SQL::$insFile, $values);
+        $values['chat_id']  = Data::getChatID();
+        $this->update(SQL::$updUnsetSightMode, $values);
     }
-    public function addPhotoCoordinate($address)
+    
+    public function addPhotoLocation($address)
     {
         
         $values['address']     = $address;

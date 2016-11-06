@@ -11,27 +11,11 @@ namespace Output;
 
 class Keyboards
 {
-    public static $selectDay = [
-        [
-            'Сейчас', 
-            'Сегодня', 
-            'Завтра'
-        ],
-        [
-            'Вт',
-            'Ср',
-            'Чт',
-            'Пт',
-            'Сб'
-        ]
-    ];
-
     public static $replySendToModeration = [
         [
-            "text" => "Отправить на модерацию"
+            "text" => "Загрузить Point"
         ]
     ];
-
     public static $replySendContact = [
         [
             [
@@ -40,7 +24,6 @@ class Keyboards
             ]
         ]
     ];
-    
     public static $replyDefault = [
         [
             [
@@ -65,90 +48,12 @@ class Keyboards
         ]
 
     ];
-
-    public static $replyDeleteFile = [
-        [
-            "text" => "Удалить файл"
-        ]
-    ];
-
     public static $replyDeleteAddress = [
         [
             "text" => "Удалить место"
         ]
     ];
     
-    public static $inlineGetStarted = [
-        [
-            [
-                "text"          => "Случайная фотография",
-                "callback_data" => "/rand_img"
-            ]
-        ],
-
-        [
-            [
-                "text"          => "Партнерская программа",
-                "callback_data" => "/partner"
-            ]
-        ]
-    ];
-
-    public static $inlineRandomMessage = [
-        [
-            [
-                "text"          => "Случайная фотография",
-                "callback_data" => "/rand_img"
-            ]
-        ],
-
-        [
-            [
-                "text"          => "Партнерская программа",
-                "callback_data" => "/partner"
-            ]
-        ]
-    ];
-
-    public static $inlineSendToModeration = [
-        [
-            [
-                "text"          => "Отправить на модерацию",
-                "callback_data" => "Отправить на модерацию"
-            ]
-        ]
-    ];
-
-    public static $inlineDeleteFile = [
-        [
-            [
-                "text"          => "Удалить оригинал",
-                "callback_data" => "deleteFile"
-            ]
-        ],
-        [
-            [
-                "text"          => "Отмена",
-                "callback_data" => "cancel"
-            ]
-        ]
-    ];
-
-    public static $inlineDeleteCoordinate = [
-        [
-            [
-                "text"          => "Удалить геолокацию",
-                "callback_data" => "deleteCoordinate"
-            ]
-        ],
-        [
-            [
-                "text"          => "Отмена",
-                "callback_data" => "cancel"
-            ]
-        ]
-    ];
-
     public static $inlineSetThisLocation = [
         [
             [
@@ -157,35 +62,24 @@ class Keyboards
             ]
         ]
     ];
-
     public static $inlineHowToAttachLocation = [
         [
             "text"          => "Как прикрепить место?",
             "callback_data" => "howToAttachLocation"
         ]
     ];
-
     public static $inlineSetSightMode = [
         [
             "text"          => "Включить Sight Mode",
             "callback_data" => "setSightMode"
         ]
     ];
-
     public static $inlineUnsetSightMode = [
         [
             "text"          => "Выключить Sight Mode",
             "callback_data" => "unsetSightMode"
         ]
     ];
-
-    public static $inlineHowToAttachFile = [
-        [
-            "text"          => "Как прикрепить оригинал?",
-            "callback_data" => "howToAttachFile"
-        ]
-    ];
-
     public static $inlineHowToAttachLocationInDetails = [
         [
             "text"          => "Как отправить локацию?",

@@ -21,7 +21,6 @@ class SQL
                                                                        LIMIT 1))";
     public static $insInViewHistory         = "INSERT INTO view_history (user_id, photo_id)                        VALUES (:user_id, :photo_id)";
     public static $insPhotoWithoutCaption   = "INSERT INTO photos       (photo_tlgrm_id, auth_id, status)          VALUES (:photo_tlgrm_id, :auth_id, :status)";
-    public static $insFile                  = "INSERT INTO files        (file_tlgrm_id, photo_id)                  VALUES (:file_tlgrm_id, :photo_id)";
     public static $insPhotoCoordinate       = "INSERT INTO coordinates  (address, coordinate, photo_id)            VALUES (:address, PointFromText(:coordinate), :photo_id)";
     public static $insNewUser               = "INSERT INTO users        (chat_id, user_name)                       VALUES (:chat_id, :user_name)";
     public static $insNewReport             = "INSERT INTO reports      (photo_id, user_id, subject)               VALUES (:photo_id, (SELECT user_id FROM users WHERE chat_id = :chat_id), :subject)
@@ -29,15 +28,10 @@ class SQL
 
     
     #SELECT
-    public static $selRandPhoto = "SELECT photo_tlgrm_id, photo_id, caption FROM photos       WHERE photo_id NOT IN (SELECT photo_id FROM view_history INNER JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id)";
-    
-    public static $selRandSight = "SELECT photo_tlgrm_id, photo_id, caption FROM photos       WHERE photo_id NOT IN (SELECT photo_id FROM view_history INNER JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id)";
-    
     public static $selGeoPhoto = 
        "SELECT
           photos.photo_id,
-          x(coordinate) as address,
-          file_tlgrm_id  as file,
+          x(coordinate) as address
           photo_tlgrm_id as photo,
           caption,
           6371 * 2 * ASIN(SQRT(
@@ -48,8 +42,6 @@ class SQL
         FROM photos
           LEFT JOIN coordinates
             ON photos.photo_id = coordinates.photo_id
-          LEFT JOIN files
-            ON photos.photo_id = files.photo_id
         
         WHERE
           x(coordinate) BETWEEN (:lat - (:dist / 69)) AND (:lat + (:dist / 69))
@@ -63,7 +55,6 @@ class SQL
        "SELECT
           photos.photo_id,
           x(coordinate) as address,
-          file_tlgrm_id  as file,
           photo_tlgrm_id as photo,
           6371 * 2 * ASIN(SQRT(
                               POWER(SIN((:lat - abs(x(coordinate))) * pi() / 180 / 2),
@@ -73,8 +64,6 @@ class SQL
         FROM photos
           LEFT JOIN coordinates
             ON photos.photo_id = coordinates.photo_id
-          LEFT JOIN files
-            ON photos.photo_id = files.photo_id
         
         WHERE
           x(coordinate) BETWEEN (:lat - (:dist / 69)) AND (:lat + (:dist / 69))
@@ -112,11 +101,8 @@ class SQL
           photo_tlgrm_id,
           photos.photo_id,
           address,
-          file_tlgrm_id,
           caption
         FROM photos
-          LEFT JOIN files
-            ON files.photo_id = photos.photo_id
           LEFT JOIN coordinates
             ON coordinates.photo_id = photos.photo_id
         WHERE photos.photo_id NOT IN (SELECT photo_id
@@ -124,17 +110,14 @@ class SQL
                                         INNER JOIN view_history
                                           ON view_history.user_id = users.user_id
                                       WHERE chat_id = :chat_id)";
+    
     public static $selInformationAboutLastPhoto =
-        "
-        SELECT
+        "SELECT
           view_history.photo_id,
           address,
-          file_tlgrm_id
         FROM users
           LEFT JOIN view_history
             ON users.user_id = view_history.user_id
-          LEFT JOIN files
-            ON view_history.photo_id = files.photo_id
           LEFT JOIN coordinates
             ON view_history.photo_id = coordinates.photo_id
         WHERE chat_id = :chat_id
@@ -181,15 +164,11 @@ class SQL
         FROM configuration";
     
     public static $selInformationAboutPhoto =
-        "
-        SELECT
-          address,
-          file_tlgrm_id
+        "SELECT
+          address
         FROM users
           LEFT JOIN view_history
             ON users.user_id = view_history.user_id
-          LEFT JOIN files
-            ON view_history.photo_id = files.photo_id
           LEFT JOIN coordinates
             ON view_history.photo_id = coordinates.photo_id
         WHERE chat_id = :chat_id AND view_history.photo_id = :photo_id
@@ -229,8 +208,6 @@ class SQL
         WHERE chat_id = :chat_id
         LIMIT 1";
     
-    public static $selLastWatchedPhotoID        = "SELECT photo_id                          FROM view_history INNER JOIN users ON view_history.user_id = users.user_id WHERE chat_id = :chat_id ORDER BY view_id DESC LIMIT 1";
-   
     public static $selCountUnwatchedPhoto       =
         "SELECT count(*)
         FROM photos
@@ -239,11 +216,32 @@ class SQL
                                  LEFT JOIN users
                                    ON view_history.user_id = users.user_id
                                WHERE chat_id = :chat_id)";
+        
+    public static $selPhotoIDOnUploading = 
+       "SELECT photo_id
+        FROM photos
+          INNER JOIN users
+            ON auth_id = user_id
+        WHERE status = 0 AND chat_id = :chat_id
+        LIMIT 1";
     
-    public static $selPhotoIDOnUploading        = "SELECT photo_id                          FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 0 AND chat_id = :chat_id limit 1";
-    public static $selPhotoFileIDOnUploading    = "SELECT photo_tlgrm_id                    FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 0 AND chat_id = :chat_id limit 1";
-    public static $selUserID                    = "SELECT user_id                           FROM users        WHERE chat_id  = :chat_id";
-    public static $selUserDistance              = "SELECT distance                          FROM users        WHERE chat_id  = :chat_id";
+    public static $selPhotoFileIDOnUploading = 
+       "SELECT photo_tlgrm_id
+        FROM photos
+          INNER JOIN users
+            ON auth_id = user_id
+        WHERE status = 0 AND chat_id = :chat_id
+        LIMIT 1";
+    
+    public static $selUserID = 
+       "SELECT user_id
+        FROM users
+        WHERE chat_id = :chat_id";
+    
+    public static $selUserDistance =
+       "SELECT distance
+        FROM users
+        WHERE chat_id = :chat_id";
    
     public static $selAddress = 
         "SELECT
@@ -254,10 +252,10 @@ class SQL
         WHERE photo_id = :photo_id
         LIMIT 1";
     
-    public static $selFile                      = "SELECT file_tlgrm_id                     FROM files        WHERE photo_id = :photo_id LIMIT 1";
-    public static $selOnModeration              = "SELECT COUNT(*)                          FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 1 and chat_id = :chat_id";
-    public static $selOnPublic                  = "SELECT COUNT(*)                          FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 2 and chat_id = :chat_id";
-    public static $selCheckBan                  = "SELECT TRUE                              FROM black_list   WHERE chat_id = :chat_id";
+    public static $selCheckBan = 
+       "SELECT TRUE
+        FROM black_list
+        WHERE chat_id = :chat_id";
    
     public static $selCheckReport =
         "SELECT TRUE
@@ -267,7 +265,6 @@ class SQL
             WHERE chat_id = :chat_id AND photo_id = :photo_id AND subject = :subject";
     
     public static $selCheckInUpload             = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 0 AND chat_id = :chat_id LIMIT 1";
-    public static $selCheckFile                 = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id INNER JOIN files       ON photos.photo_id = files.photo_id       WHERE photos.status = 0 AND chat_id = :chat_id limit 1";
     
     public static $selCheckPhone                = 
         "SELECT TRUE
@@ -362,6 +359,5 @@ class SQL
 
 
     #DELETE
-    public static $delFileOnUploading       = "DELETE FROM files       WHERE photo_id = :photo_id LIMIT 1";
     public static $delCoordinateOnUploading = "DELETE FROM coordinates WHERE photo_id = :photo_id LIMIT 1";
 }
