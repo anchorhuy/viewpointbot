@@ -43,13 +43,13 @@ class Database
     }
     public function checkLimit()
     {
-        $values = ['chat_id' => Data::getChatID()];
-        if( $this->select(SQL::$selOnModeration, $values) >= LIMIT_PICS) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
+//        $values = ['chat_id' => Data::getChatID()];
+//        if( $this->select(SQL::$selOnModeration, $values) >= LIMIT_PICS) {
+//            return 1;
+//        }
+//        else {
+//            return 0;
+//        }
     }
     public function checkAdmin()
     {
