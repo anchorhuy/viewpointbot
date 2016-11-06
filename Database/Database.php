@@ -43,13 +43,11 @@ class Database
     }
     public function checkLimit()
     {
-//        $values = ['chat_id' => Data::getChatID()];
-//        if( $this->select(SQL::$selOnModeration, $values) >= LIMIT_PICS) {
-//            return 1;
-//        }
-//        else {
-//            return 0;
-//        }
+        $values       = ['chat_id' => Data::getChatID()];
+        $onModeration = $this->select(SQL::$selOnModeration, $values);
+        $limit        = $this->select(SQL::$selLimitOnModeration);
+        
+        return ($onModeration >= $limit) ? 1 : 0;
     }
     public function checkAdmin()
     {
@@ -182,10 +180,10 @@ class Database
         $values['chat_id'] = Data::getChatID();
         return $this->select(SQL::$selPhotoIDOnUploading, $values);
     }
-    public function getInformationAboutLastWatchedPhoto()
+    public function getLastWatchedPhotoID()
     {
         $values['chat_id'] = Data::getChatID();
-        return $this->select(SQL::$selInformationAboutLastPhoto, $values, true);
+        return $this->select(SQL::$selLastWatchedPhotoID, $values, true);
     }
     public function getInformationAboutPhoto()
     {

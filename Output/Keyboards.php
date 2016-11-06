@@ -62,7 +62,13 @@ class Keyboards
             ]
         ]
     ];
-    public static $inlineHowToAttachLocation = [
+    public static $inlineNextRandomPhoto = [
+            [
+                "text" => "→",
+                "callback_data" => "nextRandImg"
+            ]
+    ];
+    public static $inlineHowToAttachPlace = [
         [
             "text"          => "Как прикрепить место?",
             "callback_data" => "howToAttachLocation"
@@ -86,6 +92,62 @@ class Keyboards
             "callback_data" => "howToAttachLocationInDetails"
         ]
     ];
+
+    public static function createKeyboardGeoPhoto($photo_id, $num)
+    {
+        $keyboard[] = self::createButtonNextGeoPhoto($num);
+        $keyboard[] = self::createButtonGetLocation($photo_id);
+        $keyboard[] = self::createButtonsFeedback($photo_id);
+
+        return $keyboard;
+    }
+    public static function createKeyboardRandomPhoto($photo_id)
+    {
+        $keyboard[] = self::$inlineNextRandomPhoto;
+        $keyboard[] = self::createButtonGetLocation($photo_id);
+        $keyboard[] = self::createButtonsFeedback($photo_id);
+
+        return $keyboard;
+    }
+    public static function createKeyboardForEditMessage($photo_id) 
+    {
+        $keyboard[] = self::createButtonGetLocation($photo_id);
+        $keyboard[] = self::createButtonsFeedback($photo_id);
+
+        return $keyboard;
+    }
+
+    public static function createButtonGetLocation($photo_id) {
+        return
+            [
+                [
+                    "text" => "Место",
+                    "callback_data" => "gl" . $photo_id
+                ]
+            ];
+    }
+    public static function createButtonsFeedback($photo_id) {
+        return
+            [
+                [
+                    "text" => "💔",
+                    "callback_data" => "dislike" . $photo_id
+                ],
+                [
+                    "text" => "❤",
+                    "callback_data" => "like" . $photo_id
+                ]
+            ];
+    }
+    public static function createButtonNextGeoPhoto($num) {
+        return
+            [
+                [
+                    "text" => "→",
+                    "callback_data" => "nextGeoImg".$num
+                ]
+            ];
+    }
 
 }
 

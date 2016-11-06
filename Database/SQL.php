@@ -89,6 +89,17 @@ class SQL
                 ON users.user_id = view_history.user_id
             WHERE photo_id = :photo_id AND chat_id = :chat_id AND dislike = 0";
     
+    public static $selOnModeration =
+       "SELECT COUNT(*)
+        FROM photos
+          LEFT JOIN users
+            ON auth_id = user_id
+        WHERE chat_id = :chat_id AND status = 0";
+    
+    public static $selLimitOnModeration =
+       "SELECT limit_on_moderation
+        FROM configuration";
+    
     public static $selAdminsChatID =
        "SELECT chat_id
         FROM admins
@@ -111,15 +122,12 @@ class SQL
                                           ON view_history.user_id = users.user_id
                                       WHERE chat_id = :chat_id)";
     
-    public static $selInformationAboutLastPhoto =
+    public static $selLastWatchedPhotoID =
         "SELECT
-          view_history.photo_id,
-          x(coordinates.coordinate) as address
+          view_history.photo_id
         FROM users
           LEFT JOIN view_history
             ON users.user_id = view_history.user_id
-          LEFT JOIN coordinates
-            ON view_history.photo_id = coordinates.photo_id
         WHERE chat_id = :chat_id
         ORDER BY view_id DESC
         LIMIT 1 ";

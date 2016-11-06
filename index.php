@@ -28,83 +28,36 @@ if ($data->message)
     {
         case 'nextRandImg':
 
-            # Запрос на следующую картинку
-            $request->answerCallbackQuery('Загружаем следующую фотографию..');
+            $request->answerCallbackQuery('Загружаю следующую фотографию..');
 
-            # Айди прошлой фотографии
-            $last_photo = $database->getInformationAboutLastWatchedPhoto();
-            $last_photo_id = $last_photo['photo_id'];
-            $last_photo_address = $last_photo['address'];
-            if ($last_photo_address) {
-                $keyboard[] = [
-                    [
-                        "text" => "Координаты",
-                        "callback_data" => "gl" . $last_photo_id
-                    ]
-                ];
-            }
-            $keyboard[] = [
-                [
-                    "text" => "💔",
-                    "callback_data" => "dislike" . $last_photo_id
-                ],
-                [
-                    "text" => "❤",
-                    "callback_data" => "like" . $last_photo_id
-                ]
-            ];
+            $photo_id = $database->getLastWatchedPhotoID();
+            $keyboard = Keyboards::createKeyboardForEditMessage($photo_id);
 
-            # Редактируем сообщение
             $request->createInlineKeyboard($keyboard);
             $request->editMessageReplyMarkup();
-            $request->unsetKeyboard();
-            unset($keyboard);
 
-            if ($photo = $database->getRandPhoto()) {
-                $photo_id = $photo['photo_id'];
+            if ($photo = $database->getRandPhoto())
+            {
+                $photo_id       = $photo['photo_id'];
                 $photo_tlgrm_id = $photo['photo_tlgrm_id'];
-                $photo_caption = $photo['caption'];
-                $photo_address = $photo['address'];
-
-                $keyboard[] = [
-                    [
-                        "text" => "Следующий",
-                        "callback_data" => "nextRandImg"
-                    ]
-                ];
-                if ($photo_caption) {
+                if ($photo_caption  = $photo['caption']) {
                     $request->createCaption($photo_caption);
                 }
-                if ($photo_address) {
-                    $keyboard[] = [
-                        [
-                            "text" => "Координаты",
-                            "callback_data" => "gl" . $photo_id
-                        ]
-                    ];
-                }
-                $keyboard[] = [
-                    [
-                        "text" => "💔",
-                        "callback_data" => "dislike" . $photo_id
-                    ],
-                    [
-                        "text" => "❤",
-                        "callback_data" => "like" . $photo_id
-                    ]
-                ];
 
+                $keyboard = Keyboards::createKeyboardRandomPhoto($photo_id);
 
                 $request->createInlineKeyboard($keyboard);
                 $request->sendPhoto($photo_tlgrm_id);
                 $database->updateViews($photo_id);
-            } else {
+            }
+            else
+            {
                 $text = "У меня больше нет новых фотографий 😥\n\r";
                 $text = "Попробуй немного позже";
                 $request->sendMessage($text);
             }
-
             exit();
+
         case 'setThisLocation':
             if ($database->checkUploading())
             {
@@ -146,6 +99,8 @@ if ($data->message)
             $text  = "Нажми на 📎 в нижнем левом углу и выбери «Location»;\n\r";
             $text .= "Если ты находишься на месте, где сделана фотография нажми «Send my current location».\n\r";
             $text .= "Если же текущее местоположение отличается, то нужно перетаскивая точку по карте найти именно то место, где сделана фотография.\n\r\n\r";
+
+            $keyboard[] = Keyboards::$inlineHowToAttachPlace;
             $request->createInlineKeyboard($keyboard);
             $request->editMessageReplyMarkup();
             $request->editMessageText($text);
@@ -179,42 +134,42 @@ if ($data->message)
         $request->answerCallbackQuery('Спасибо за ❤');
         $database->setLike($photo_id);
 
-        if ($pay_info = $database->checkLikesToPay($photo_id))
-        {
-
-            $money = $pay_info['money'];
-            $likes = (int)$pay_info['likes'] + 1;
-            $views = $pay_info['views'];
-
-
-            $author_info = $database->getInfoAboutAuthor($photo_id);
-            $author_chat_id = $author_info['chat_id'];
-            $photo_tlgrm_id = $author_info['photo_tlgrm_id'];
-
-            $textForAuthor = "Поздравляю!\n";
-            $textForAuthor .= "Твоя фоотография набарала " . $likes . " ❤ за " . $views . " просмотров\n";
-
-
-            if ($database->checkIssetPhone()) {
-                $textForAuthor .= "Скоро я переведу деньги на твой QIWI 💸";
-            } else {
-                $textForAuthor .= "Нажми на кнопку снизу чтобы мы знали куда перевести деньги";
-                $request->createReplyKeyboard(Keyboards::$replySendContact);
-            }
-
-            $request->createCaption($textForAuthor);
-            $request->sendPhoto($photo_tlgrm_id, $author_chat_id);
-
-            $request->unsetKeyboard();
-            $textForAdmin = "Еще одна фотография набрала необходимой количество ❤";
-            if (is_array($admins_chat_id = $database->getAdminsChatID())) {
-                foreach ($admins_chat_id as $admin_chat_id) {
-                    $request->sendMessage($textForAdmin, $admin_chat_id);
-                }
-            } else {
-                $request->sendMessage($textForAdmin, $admins_chat_id);
-            }
-        }
+//        if ($pay_info = $database->checkLikesToPay($photo_id))
+//        {
+//
+//            $money = $pay_info['money'];
+//            $likes = (int)$pay_info['likes'] + 1;
+//            $views = $pay_info['views'];
+//
+//
+//            $author_info = $database->getInfoAboutAuthor($photo_id);
+//            $author_chat_id = $author_info['chat_id'];
+//            $photo_tlgrm_id = $author_info['photo_tlgrm_id'];
+//
+//            $textForAuthor = "Поздравляю!\n";
+//            $textForAuthor .= "Твоя фоотография набарала " . $likes . " ❤ за " . $views . " просмотров\n";
+//
+//
+//            if ($database->checkIssetPhone()) {
+//                $textForAuthor .= "Скоро я переведу деньги на твой QIWI 💸";
+//            } else {
+//                $textForAuthor .= "Нажми на кнопку снизу чтобы мы знали куда перевести деньги";
+//                $request->createReplyKeyboard(Keyboards::$replySendContact);
+//            }
+//
+//            $request->createCaption($textForAuthor);
+//            $request->sendPhoto($photo_tlgrm_id, $author_chat_id);
+//
+//            $request->unsetKeyboard();
+//            $textForAdmin = "Еще одна фотография набрала необходимой количество ❤";
+//            if (is_array($admins_chat_id = $database->getAdminsChatID())) {
+//                foreach ($admins_chat_id as $admin_chat_id) {
+//                    $request->sendMessage($textForAdmin, $admin_chat_id);
+//                }
+//            } else {
+//                $request->sendMessage($textForAdmin, $admins_chat_id);
+//            }
+//        }
         exit();
     }
     if (substr($data->data, 0, 7)  == "dislike")
@@ -308,70 +263,25 @@ if ($data->message)
             $last_photo = $photo;
         }
 
-        $last_photo_id       = $last_photo['photo_id'];
-        $last_photo_tlgrm_id = $last_photo['photo'];
-        $last_address        = $last_photo['address'];
-        if ($last_address) {
-            $keyboard[] = [
-                [
-                    "text" => "Координаты",
-                    "callback_data" => "gl" . $last_photo_id
-                ]
-            ];
-        }
-        $keyboard[] = [
-            [
-                "text" => "💔",
-                "callback_data" => "dislike" . $last_photo_id
-            ],
-            [
-                "text" => "❤",
-                "callback_data" => "like" . $last_photo_id
-            ]
-        ];
-
+        $last_photo_id = $last_photo['photo_id'];
+        $keyboard = Keyboards::createKeyboardForEditMessage($last_photo_id);
         $request->createInlineKeyboard($keyboard);
         $request->editMessageReplyMarkup();
 
         if ($next_photo)
         {
-            unset($keyboard);
-            $request->unsetKeyboard();
+            $num = $num + 1;
+            $photo_id = $next_photo['photo_id'];
 
-            $next_num = $num + 1;
-            $next_photo_tlgrm_id = $next_photo['photo'];
-            $next_photo_id       = $next_photo['photo_id'];
-            $next_address        = $next_photo['address'];
-            $next_caption        = $next_photo['caption'] . "\n";
-            $next_caption       .= "До этого места " . round((float) $next_photo['distance'], 2) . "км";
-            $keyboard[] = [
-                [
-                    "text" => "Следующий",
-                    "callback_data" => "nextGeoImg".$next_num
-                ]
-            ];
-            if ($next_address) {
-                $keyboard[] = [
-                    [
-                        "text" => "Координаты",
-                        "callback_data" => "gl" . $next_photo_id
-                    ]
-                ];
-            }
-            $keyboard[] = [
-                [
-                    "text" => "💔",
-                    "callback_data" => "dislike" . $next_photo_id
-                ],
-                [
-                    "text" => "❤",
-                    "callback_data" => "like" . $next_photo_id
-                ]
-            ];
-
-            $request->createCaption($next_caption);
+            $keyboard = Keyboards::createKeyboardGeoPhoto($photo_id,$num);
             $request->createInlineKeyboard($keyboard);
-            $request->sendPhoto($next_photo_tlgrm_id);
+
+            $caption  = $next_photo['caption'] . "\n";
+            $caption .= "До этого места " . round((float) $next_photo['distance'], 2) . "км";
+            $request->createCaption($caption);
+
+            $photo = $next_photo['photo'];
+            $request->sendPhoto($photo);
         }
         else
         {
@@ -381,7 +291,6 @@ if ($data->message)
             $request->unsetKeyboard();
             $request->sendMessage($text);            
         }
-        
         exit();
     }
 }
@@ -408,6 +317,7 @@ else
                 $caption    = "Отправь этот Point на модерацию чтобы загрузить новый.\n";
                 $keyboard[] = Keyboards::$replySendToModeration;
                 $keyboard[] = Keyboards::$replyDeleteAddress;
+                $request->createReplyKeyboard($keyboard);
             }
             else
             {
@@ -415,22 +325,17 @@ else
                 $caption .= "После этого ты сможешь добавить следующий Point.\n";
             }
             
-            $photo   = $database->getPhotoFileIDOnUploading();
-            
+            $photo = $database->getPhotoFileIDOnUploading();
             $request->createCaption($caption);
-            $request->createReplyKeyboard($keyboard);
             $request->sendPhoto($photo);
             exit();
         }
 
         $database->sendToUploading();
 
-        $text  = "Красивое фото!\n\r\n\r";
-        $text .= "Осталось указазать геолокацию места и можешь отправлять на модерацию.\n\r";
-        $request->sendMessage($text);
-
-        $text = "<i>Если что-то не понятно, то нажми на соответствующую кнопку под этим сообщением</i>.";
-        $keyboard[] = Keyboards::$inlineHowToAttachLocation;
+        $text  = "<b>Красивое фото!</b>\n\r\n\r";
+        $text .= "Осталось указазать место.\n\r";
+        $keyboard[] = Keyboards::$inlineHowToAttachPlace;
         $request->createInlineKeyboard($keyboard);
         $request->sendMessage($text);
 
@@ -474,39 +379,20 @@ else
         
         if ($photo = $database->getNearPhoto())
         {
-            $photo_tlgrm_id = $photo['photo'];
             $photo_id       = $photo['photo_id'];
-            $address        = $photo['address'];
-            $caption        = $photo['caption'] . "\n";
-            $caption       .= "До этого места " . round((float)$photo['distance'], 2) . "км";
-            $keyboard[]     = [
-                [
-                    "text" => "Следующий",
-                    "callback_data" => "nextGeoImg0"
-                ]
-            ];
-            if ($address) {
-                $keyboard[] = [
-                    [
-                        "text" => "Координаты",
-                        "callback_data" => "gl" . $photo_id
-                    ]
-                ];
-            }
-            $keyboard[] = [
-                [
-                    "text" => "💔",
-                    "callback_data" => "dislike" . $photo_id
-                ],
-                [
-                    "text" => "❤",
-                    "callback_data" => "like" . $photo_id
-                ]
-            ];
+            $keyboard = Keyboards::createKeyboardGeoPhoto($photo_id, 0);
+            $request->createInlineKeyboard($keyboard);
+
+            $caption  = $photo['caption'] . "\n";
+            $caption .= "До этого места " . round((float) $photo['distance'], 2) . "км";
+            $request->createCaption($caption);
+
+            $photo = $photo['photo'];
+            $request->sendPhoto($photo);
 
             $request->createCaption($caption);
             $request->createInlineKeyboard($keyboard);
-            $request->sendPhoto($photo_tlgrm_id);
+            $request->sendPhoto($photo);
             $database->updateViews($photo_id);
         }
         else
@@ -567,45 +453,22 @@ else
             if ($photo = $database->getRandPhoto())
             {
                 $photo_id = $photo['photo_id'];
-                $photo_tlgrm_id = $photo['photo_tlgrm_id'];
-                $photo_caption = $photo['caption'];
-                $photo_address = $photo['address'];
+                $keyboard = Keyboards::createKeyboardRandomPhoto($photo_id);
+                $request->createInlineKeyboard($keyboard);
 
-                $keyboard[] = [
-                    [
-                        "text" => "Следующий",
-                        "callback_data" => "nextRandImg"
-                    ]
-                ];
-                if ($photo_caption) {
+                if ($photo_caption  = $photo['caption']) {
                     $request->createCaption($photo_caption);
                 }
-                if ($photo_address) {
-                    $keyboard[] = [
-                        [
-                            "text" => "Координаты",
-                            "callback_data" => "gl" . $photo_id
-                        ]
-                    ];
-                }
-                $keyboard[] = [
-                    [
-                        "text" => "💔",
-                        "callback_data" => "dislike" . $photo_id
-                    ],
-                    [
-                        "text" => "❤",
-                        "callback_data" => "like" . $photo_id
-                    ]
-                ];
 
-                $request->createInlineKeyboard($keyboard);
-                $request->sendPhoto($photo_tlgrm_id);
+                $photo = $photo['photo_tlgrm_id'];
+                $request->sendPhoto($photo);
+
                 $database->updateViews($photo_id);
             }
             else
             {
-                $text = 'Вы посмотрели все фотографии из нашей базы.';
+                $text = "У меня больше нет новых фотографий 😥\n\r";
+                $text = "Попробуй немного позже";
                 $request->sendMessage($text);
             }
 
@@ -671,13 +534,14 @@ else
                 }
                 else
                 {
-                    $text = "<b>Чтобы отправить Point на модерацию нужно прикрепить место</b>.\n\r";
-                    $keyboard[] = Keyboards::$inlineHowToAttachLocation;
+                    $text = "<b>Чтобы загрузить Point нужно прикрепить место</b>.\n\r";
+                    $keyboard[] = Keyboards::$inlineHowToAttachPlace;
                     $request->createInlineKeyboard($keyboard);
                 }
                 $request->sendMessage($text);
                 exit();
             }
+
             if ($input_text == 'Удалить место')
             {
                 $database->deletePhotoLocation();
@@ -719,7 +583,7 @@ else
                     $text .= "Какое из них прикрепить к загружаемой фотографии?\n\r\n\r";
                 }
                 else {
-                    $text .= "Нажми на кнопку под локацией чтобы прикрепить ее к фотографии.\n\r\n\r";
+                    $text .= "Нажми на кнопку под нужным местом, чтобы его прикрепить.\n\r\n\r";
                 }
 
                 $request->sendMessage($text);
@@ -744,7 +608,7 @@ else
             $text .= "Попробуй:\n\r";
             $text .= "- сформулировать запрос по-другому,\n\r";
             $text .= "- самостоятельно прикрепить локацию.";
-            $request->createInlineKeyboard([Keyboards::$inlineHowToAttachLocation]);
+            $request->createInlineKeyboard([Keyboards::$inlineHowToAttachPlace]);
             $request->sendMessage($text);
             $request->hideKeyboard();
             exit();
