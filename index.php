@@ -455,8 +455,8 @@ else
             }
             else
             {
-                $text  = "<b>К фотографии уже прикреплена геолокация</b>\n\r.";
-                $text .= "Удали существующую чтобы добавить новую..";
+                $text  = "<b>К фотографии уже прикреплено место</b>\n\r.";
+                $text .= "Удали существующую чтобы добавить новую.";
 
                 $request->createReplyKeyboard($keyboard);
                 $request->sendMessage($text);
@@ -469,7 +469,9 @@ else
             
             exit();
         }
+        
         $database->updateUserLocation();
+        
         if ($photo = $database->getNearPhoto())
         {
             $photo_tlgrm_id = $photo['photo'];

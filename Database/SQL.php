@@ -100,7 +100,7 @@ class SQL
        "SELECT
           photo_tlgrm_id,
           photos.photo_id,
-          address,
+          x(coordinate) as address,
           caption
         FROM photos
           LEFT JOIN coordinates
@@ -114,7 +114,7 @@ class SQL
     public static $selInformationAboutLastPhoto =
         "SELECT
           view_history.photo_id,
-          address
+          x(coordinate) as address
         FROM users
           LEFT JOIN view_history
             ON users.user_id = view_history.user_id
