@@ -31,7 +31,7 @@ class SQL
     public static $selGeoPhoto = 
        "SELECT
           photos.photo_id,
-          x(coordinate) as address
+          x(coordinate) as address,
           photo_tlgrm_id as photo,
           caption,
           6371 * 2 * ASIN(SQRT(
