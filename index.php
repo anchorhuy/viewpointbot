@@ -365,22 +365,17 @@ else
                 $update = json_decode(file_get_contents($url), true);
                 $address = $update['results'][0]['formatted_address'];
                 $database->addPhotoLocation($address);
-                $text = "<b>Спасибо за геолокацию фотографии!</b>\n\r";
+                $text  = "<b>Место успешно прикреплено.</b>\n\r\n\r";
+                $text .= "Теперь можешь загрузить Point!\n\r";
             }
             else
             {
-                $text  = "<b>К фотографии уже прикреплено место</b>\n\r.";
-                $text .= "Удали существующую чтобы добавить новую.";
-
-                $request->createReplyKeyboard($keyboard);
-                $request->sendMessage($text);
-
-                exit();
+                $text  = "<b>К фотографии уже прикреплено место</b>\n\r\n\r.";
+                $text .= "Нажми на кнопку «Удалить место» в нижней части экрана чтобы прикрепить новое.";
             }
 
             $request->createReplyKeyboard($keyboard);
             $request->sendMessage($text);
-            
             exit();
         }
        
@@ -404,8 +399,12 @@ else
         else
         {
             $distance = $database->getUserDistance();
-            $text  = "<b>Я не смог найти Point в радиусе ".$distance." км</b>.\n\r";
-            $text .= "Попробуй увеличить расстояние поиска мест командой /dist* где «*» - радиус в км.";
+            $text  = "<b>Я не смог найти Point в радиусе ".$distance." км</b>.\n\r\n\r";
+            $text .= "Попробуй увеличить расстояние поиска.\n\r";
+            $text .= "Для этого отправь /dist*.\n\r";
+            $text .= "Вместо «*» напиши новый радиус в км.\n\r\n\r";
+            $text .= "<i>Пример:</i>\n\r";
+            $text .= "/dist50";
             $request->sendMessage($text);
         }
 
@@ -557,7 +556,7 @@ else
             }
 
             $address = urlencode($data->text);
-            $url = GOOGLE_API_URL_FIND_PLACE . $address . GOOGLE_API_KEY;
+            $url = GOOGLE_API_URL_FIND_PLACE.$address.GOOGLE_API_KEY;
             $update = json_decode(file_get_contents($url), true);
 
             $results = $update['results'];
@@ -565,8 +564,8 @@ else
 
             if ($status == 'OK')
             {
+                $text        = "<b>Найдено ".$results_num." ".$place."</b>\n\r\n\r";
                 $results_num = count($results);
-
                 switch ($results_num) {
                     case 1 :
                         $place = 'место';
@@ -580,8 +579,6 @@ else
                         $place = 'мест';
                         break;
                 }
-
-                $text  = "<b>Найдено ".$results_num." ".$place."</b>\n\r\n\r";
 
                 if ($results_num > 1){
                     $text .= "Какое из них прикрепить к загружаемой фотографии?\n\r\n\r";
@@ -606,12 +603,12 @@ else
             }
             else
             {
-                $text  = "Я не смог найти «".$input_text."» 😥 \n\r";
+                $text  = "<b>Я не смог найти «".$input_text."» 😥</b> \n\r\n\r";
             }
 
             $text .= "Попробуй:\n\r";
-            $text .= "- сформулировать запрос по-другому,\n\r";
-            $text .= "- самостоятельно прикрепить локацию.";
+            $text .= "- Сформулировать запрос по-другому;\n\r";
+            $text .= "- Самостоятельно прикрепить локацию.";
             $request->createInlineKeyboard([Keyboards::$inlineHowToAttachPlace]);
             $request->sendMessage($text);
             $request->hideKeyboard();
@@ -621,11 +618,13 @@ else
         if ($input_text == 'Загрузить Point' or $input_text == 'Удалить место')
         {
             $text = "Сперва нужно загрузить фотографию.";
+            $request->createReplyKeyboard(Keyboards::$replyDefault);
             $request->sendMessage($text);
             exit();
         }
 
         $text = "Неизвестная команда, если возникли какие-либо вопросы, то пиши мне - @StPawlo";
+        $request->createReplyKeyboard(Keyboards::$replyDefault);
         $request->sendMessage($text);
     }
 }
