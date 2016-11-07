@@ -405,7 +405,7 @@ else
         {
             $distance = $database->getUserDistance();
             $text  = "<b>Я не смог найти Point в радиусе ".$distance." км</b>.\n\r";
-            $text .= "Попробуй увеличить адрес командой /dist* где «*» - радиус в километрах.";
+            $text .= "Попробуй увеличить расстояние поиска мест командой /dist* где «*» - радиус в км.";
             $request->sendMessage($text);
         }
 
@@ -525,8 +525,7 @@ else
                 $text .= "/dist13";
                 $request->sendMessage($text);
             }
-            
-            
+            exit();
         }
         if ($database->checkUploading())
         {
@@ -619,5 +618,14 @@ else
             exit();
         }
 
+        if ($input_text == 'Загрузить Point' or $input_text == 'Удалить место')
+        {
+            $text = "Сперва нужно загрузить фотографию.";
+            $request->sendMessage($text);
+            exit();
+        }
+
+        $text = "Неизвестная команда, если возникли какие-либо вопросы, то пиши мне - @StPawlo";
+        $request->sendMessage($text);
     }
 }
