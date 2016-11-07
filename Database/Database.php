@@ -183,7 +183,7 @@ class Database
     public function getLastWatchedPhotoID()
     {
         $values['chat_id'] = Data::getChatID();
-        return $this->select(SQL::$selLastWatchedPhotoID, $values, true);
+        return $this->select(SQL::$selLastWatchedPhotoID, $values);
     }
     public function getInformationAboutPhoto()
     {

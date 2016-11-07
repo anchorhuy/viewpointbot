@@ -28,7 +28,7 @@ if ($data->message)
     {
         case 'nextRandImg':
 
-            $request->answerCallbackQuery('Загружаю следующую фотографию..');
+            $request->answerCallbackQuery('Загружаю следующий Point..');
 
             $photo_id = $database->getLastWatchedPhotoID();
             $keyboard = Keyboards::createKeyboardForEditMessage($photo_id);
@@ -52,12 +52,12 @@ if ($data->message)
             }
             else
             {
-                $text = "У меня больше нет новых фотографий 😥\n\r";
-                $text = "Попробуй немного позже";
+                $request->unsetKeyboard();
+                $text  = "У меня больше нет новых фотографий 😥\n\r";
+                $text .= "Попробуй немного позже";
                 $request->sendMessage($text);
             }
             exit();
-
         case 'setThisLocation':
             if ($database->checkUploading())
             {
@@ -189,7 +189,7 @@ if ($data->message)
     }
     if (substr($data->data, 0, 2)  == "gl")
     {
-        $request->answerCallbackQuery('Загружаю локацию..');
+        $request->answerCallbackQuery('Загружаю место..');
         $photo_id = substr($data->data, 2);
         if ($venue = $database->getLocation($photo_id))
         {
@@ -251,7 +251,7 @@ if ($data->message)
     }
     if (substr($data->data, 0, 10) == "nextGeoImg")
     {
-        $request->answerCallbackQuery('Загружаю следующую фотографию..');
+        $request->answerCallbackQuery('Загружаю следующий Point..');
         $num   = (int) substr($data->data, 10);
         $photo = $database->getNearPhoto($num);
 
@@ -331,14 +331,21 @@ else
             exit();
         }
 
-        $database->sendToUploading();
-
-        $text  = "<b>Красивое фото!</b>\n\r\n\r";
-        $text .= "Осталось указазать место.\n\r";
-        $keyboard[] = Keyboards::$inlineHowToAttachPlace;
-        $request->createInlineKeyboard($keyboard);
+        if ($captionLength = strlen(Data::getCaption()) <= 160)
+        {
+            $database->sendToUploading();
+            $text  = "<b>Красивое фото!</b>\n\r\n\r";
+            $text .= "Осталось указазать место.\n\r";
+            $keyboard[] = Keyboards::$inlineHowToAttachPlace;
+            $request->createInlineKeyboard($keyboard);
+        }
+        else
+        {
+            $text  = "Описание должно содержать в себе не больше 160 символов\n\r";
+            $text .= "Загрузи фотографию заново и убери ".($captionLength - 160)." символов";
+        }
+        
         $request->sendMessage($text);
-
         exit();
     }
     if ($data->location)
@@ -348,11 +355,13 @@ else
             $keyboard[] = Keyboards::$replySendToModeration;
             $keyboard[] = Keyboards::$replyDeleteAddress;
 
-            if (!$database->checkIssetLocation()) {
-                $latitude  = $data->location->latitude;
-                $longitude = $data->location->longitude;
+            if (!$database->checkIssetLocation())
+            {
+                $latitude   = $data->location->latitude;
+                $longitude  = $data->location->longitude;
+                $coordinate = $latitude.','.$longitude;
                 
-                $url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&language=ru&result_type=street_address&key=AIzaSyAoSshruro4rvjdMicj1c0mvchKAVLMBg4";
+                $url = GOOGLE_API_URL_GEOCODE.$coordinate.GOOGLE_API_KEY;
                 $update = json_decode(file_get_contents($url), true);
                 $address = $update['results'][0]['formatted_address'];
                 $database->addPhotoLocation($address);
@@ -374,7 +383,7 @@ else
             
             exit();
         }
-        
+       
         $database->updateUserLocation();
         
         if ($photo = $database->getNearPhoto())
@@ -390,9 +399,6 @@ else
             $photo = $photo['photo'];
             $request->sendPhoto($photo);
 
-            $request->createCaption($caption);
-            $request->createInlineKeyboard($keyboard);
-            $request->sendPhoto($photo);
             $database->updateViews($photo_id);
         }
         else
@@ -524,7 +530,7 @@ else
         }
         if ($database->checkUploading())
         {
-            if ($input_text == 'Отправить на модерацию')
+            if ($input_text == 'Загрузить Point')
             {
                 if ($database->checkIssetLocation())
                 {
@@ -541,7 +547,6 @@ else
                 $request->sendMessage($text);
                 exit();
             }
-
             if ($input_text == 'Удалить место')
             {
                 $database->deletePhotoLocation();
