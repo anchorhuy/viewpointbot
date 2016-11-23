@@ -295,7 +295,7 @@ else
             exit();
         } 
         elseif ($database->checkLimit()) {
-            $text = "Вы не можете добавить больше " . LIMIT_PICS . " фотографий за раз.\n\r";
+            $text = "Вы не можете добавить больше " . $database->getLimit() . " фотографий за раз.\n\r";
             $text .= "Необходимо подождать пока ваши фотографии пройдут модерацию.";
 
             $request->sendMessage($text);

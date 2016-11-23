@@ -45,7 +45,7 @@ class Database
     {
         $values       = ['chat_id' => Data::getChatID()];
         $onModeration = $this->select(SQL::$selOnModeration, $values);
-        $limit        = $this->select(SQL::$selLimitOnModeration);
+        $limit        = $this->getLimit();
         
         return ($onModeration >= $limit) ? 1 : 0;
     }
@@ -163,6 +163,10 @@ class Database
     {
         $values['chat_id'] = Data::getChatID();
         return $this->select(SQL::$selUserID, $values);
+    }
+    public function getLimit()
+    {
+        return $this->select(SQL::$selLimit);
     }
     public function getUserLocation()
     {

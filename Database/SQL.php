@@ -100,7 +100,7 @@ class SQL
             ON auth_id = user_id
         WHERE chat_id = :chat_id AND status = 1";
     
-    public static $selLimitOnModeration =
+    public static $selLimit =
        "SELECT `value`
         FROM settings 
         WHERE name = 'uploading_limit'";
