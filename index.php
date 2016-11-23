@@ -224,17 +224,8 @@ if ($data->message)
     {
         $subject  = $data->data{6};
         $photo_id = substr($data->data, 7);
-        switch ($subject)
-        {
-            case 'L' :
-                $subject_index = 0;
-                break;
-            case 'F' :
-                $subject_index = 1;
-                break;
-        }
 
-        if ($database->checkAlreadyReport($photo_id, $subject_index))
+        if ($database->checkAlreadyReport($photo_id))
         {
             $answer = 'Жалоба уже отправлена';
             $request->answerCallbackQuery($answer, true);
@@ -245,7 +236,7 @@ if ($data->message)
             $request->answerCallbackQuery($answer);
             $request->createInlineKeyboard([]);
             $request->editMessageReplyMarkup();
-            $database->createNewReport($photo_id, $subject_index);
+            $database->createNewReport($photo_id);
         }
         exit();
     }

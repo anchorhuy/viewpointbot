@@ -95,9 +95,8 @@ class Database
         $values['photo_id'] = $photo_id;
         return $this->select(SQL::$selDislike, $values);
     }
-    public function checkAlreadyReport($photo_id, $subject)
+    public function checkAlreadyReport($photo_id)
     {
-        $values['subject']   = $subject;
         $values['chat_id']  = Data::getChatID();
         $values['photo_id'] = $photo_id;
         return $this->select(SQL::$selCheckReport, $values);
@@ -403,8 +402,7 @@ class Database
         $values['chat_id']   = Data::getChatID();
         $this->insert(SQL::$insNewUser, $values);
     }
-    public function createNewReport($photo_id, $subject){
-        $values['subject']   = $subject;
+    public function createNewReport($photo_id){
         $values['photo_id']  = $photo_id;
         $values['chat_id']   = Data::getChatID();
         $this->insert(SQL::$insNewReport, $values);

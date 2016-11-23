@@ -23,7 +23,7 @@ class SQL
     public static $insPhotoWithoutCaption   = "INSERT INTO photos       (photo_tlgrm_id, auth_id, status)          VALUES (:photo_tlgrm_id, :auth_id, :status)";
     public static $insPhotoCoordinate       = "INSERT INTO coordinates  (address, coordinate, photo_id)            VALUES (:address, PointFromText(:coordinate), :photo_id)";
     public static $insNewUser               = "INSERT INTO users        (chat_id, user_name)                       VALUES (:chat_id, :user_name)";
-    public static $insNewReport             = "INSERT INTO reports      (photo_id, user_id, subject)               VALUES (:photo_id, (SELECT user_id FROM users WHERE chat_id = :chat_id), :subject)
+    public static $insNewReport             = "INSERT INTO reports      (photo_id, user_id)               VALUES (:photo_id, (SELECT user_id FROM users WHERE chat_id = :chat_id))
 ";
 
     
@@ -47,6 +47,8 @@ class SQL
           x(coordinate) BETWEEN (:lat - (:dist / 69)) AND (:lat + (:dist / 69))
           AND
           y(coordinate) BETWEEN (:lng - :dist / abs(cos(radians(:lat)) * 69)) AND (:lng + :dist / abs(cos(radians(:lat)) * 69))
+          AND 
+          status = 2
         
         HAVING distance < :dist
         ORDER BY distance ";
@@ -69,6 +71,8 @@ class SQL
           x(coordinate) BETWEEN (:lat - (:dist / 69)) AND (:lat + (:dist / 69))
           AND
           y(coordinate) BETWEEN (:lng - :dist / abs(cos(radians(:lat)) * 69)) AND (:lng + :dist / abs(cos(radians(:lat)) * 69))
+          AND 
+          status = 2
           AND 
           photos.sight = 1
         
@@ -94,7 +98,7 @@ class SQL
         FROM photos
           LEFT JOIN users
             ON auth_id = user_id
-        WHERE chat_id = :chat_id AND status = 0";
+        WHERE chat_id = :chat_id AND status = 1";
     
     public static $selLimitOnModeration =
        "SELECT limit_on_moderation
@@ -120,7 +124,8 @@ class SQL
                                       FROM users
                                         INNER JOIN view_history
                                           ON view_history.user_id = users.user_id
-                                      WHERE chat_id = :chat_id)";
+                                      WHERE chat_id = :chat_id)
+        AND photos.status = 2";
     
     public static $selLastWatchedPhotoID =
         "SELECT
@@ -223,7 +228,8 @@ class SQL
                                FROM view_history
                                  LEFT JOIN users
                                    ON view_history.user_id = users.user_id
-                               WHERE chat_id = :chat_id)";
+                               WHERE chat_id = :chat_id)
+         AND photos.status = 2";
         
     public static $selPhotoIDOnUploading = 
        "SELECT photo_id
@@ -270,7 +276,7 @@ class SQL
             FROM reports
               INNER JOIN users
                 ON users.user_id = reports.user_id
-            WHERE chat_id = :chat_id AND photo_id = :photo_id AND subject = :subject";
+            WHERE chat_id = :chat_id AND photo_id = :photo_id";
     
     public static $selCheckInUpload             = "SELECT TRUE                              FROM photos       INNER JOIN users       ON auth_id = user_id     WHERE status = 0 AND chat_id = :chat_id LIMIT 1";
     
