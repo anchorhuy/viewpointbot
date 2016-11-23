@@ -101,8 +101,9 @@ class SQL
         WHERE chat_id = :chat_id AND status = 1";
     
     public static $selLimitOnModeration =
-       "SELECT limit_on_moderation
-        FROM configuration";
+       "SELECT `value`
+        FROM settings 
+        WHERE name = 'uploading_limit'";
     
     public static $selAdminsChatID =
        "SELECT chat_id
