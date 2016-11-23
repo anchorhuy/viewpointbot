@@ -269,6 +269,7 @@ class SQL
     public static $selCheckBan = 
        "SELECT TRUE
         FROM black_list
+        INNER JOIN users ON users.user_id = black_list.user_id
         WHERE chat_id = :chat_id";
    
     public static $selCheckReport =
