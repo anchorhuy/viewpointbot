@@ -96,7 +96,7 @@ class SQL
     public static $selOnModeration =
        "SELECT COUNT(*)
         FROM photos
-          LEFT JOIN users
+          INNER JOIN users
             ON auth_id = user_id
         WHERE chat_id = :chat_id AND status = 1";
     

@@ -47,7 +47,7 @@ class Database
         $onModeration = $this->select(SQL::$selOnModeration, $values);
         $limit        = $this->getLimit();
         
-        return ($onModeration >= $limit) ? 1 : 0;
+        return ($onModeration <= $limit) ? 1 : 0;
     }
     public function checkAdmin()
     {

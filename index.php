@@ -295,11 +295,10 @@ else
             exit();
         } 
         elseif ($database->checkLimit()) {
-            $text = "Вы не можете добавить больше " . $database->getLimit() . " фотографий за раз.\n\r";
+            $limit = $database->getLimit();
+            $text = "Вы не можете добавить больше " . $limit . " фотографий за раз.\n\r";
             $text .= "Необходимо подождать пока ваши фотографии пройдут модерацию.";
-
             $request->sendMessage($text);
-
             exit();
         }
         elseif ($database->checkUploading()) {
