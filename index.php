@@ -330,7 +330,6 @@ else
             $text .= "Осталось указазать место.\n\r";
             $keyboard[] = Keyboards::$replyDeletePhoto;
             $request->createReplyKeyboard($keyboard);
-            $request->hideKeyboard();
         }
         else
         {
@@ -339,6 +338,7 @@ else
         }
         
         $message = $request->sendMessage($text);
+        
         $keyboard[] = Keyboards::$inlineHowToAttachPlace;
         $request->createInlineKeyboard($keyboard);
         $request->editMessageReplyMarkup($message['message_id']);
