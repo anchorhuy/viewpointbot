@@ -339,6 +339,7 @@ else
         
         $message = $request->sendMessage($text);
         
+        $keyboard = [];
         $keyboard[] = Keyboards::$inlineHowToAttachPlace;
         $request->createInlineKeyboard($keyboard);
         $request->editMessageReplyMarkup($message['message_id']);
