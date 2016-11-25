@@ -102,8 +102,8 @@ class Request
             $parameters = $this->keyboard;
         }
 
-        $message_id ?: $message_id = Data::getMessageID();
-        $chat_id    ?: $chat_id    = Data::getChatID();
+        $message_id = ($message_id ?: Data::getMessageID());
+        $chat_id    = ($chat_id    ?: Data::getChatID());
 
         $parameters['method']     = "editMessageReplyMarkup";
         $parameters['message_id'] = $message_id;

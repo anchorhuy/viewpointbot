@@ -53,6 +53,11 @@ class Keyboards
             "text" => "Удалить место"
         ]
     ];
+    public static $replyDeletePhoto = [
+        [
+            "text" => "Удалить фотографию"
+        ]
+    ];
     
     public static $inlineSetThisLocation = [
         [
